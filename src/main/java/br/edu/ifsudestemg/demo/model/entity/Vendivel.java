@@ -19,9 +19,9 @@ public abstract class Vendivel {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private String name;
-    private BigDecimal price;
-    private String description;
-    private String unit;
-    private Boolean active;
+    private String nome;
+    private BigDecimal preco;
+    private String descricao;
+    private String unidade;
+    private Boolean ativo;
 }

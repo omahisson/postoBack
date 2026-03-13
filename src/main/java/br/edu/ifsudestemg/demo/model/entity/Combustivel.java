@@ -10,14 +10,12 @@ import lombok.NoArgsConstructor;
 @EqualsAndHashCode(callSuper = true)
 @Entity
 @Data
-@AllArgsConstructor
 @NoArgsConstructor
-public class Servico extends Vendivel{
+@AllArgsConstructor
+public class Combustivel extends Produto{
 
-    @Column(name = "duracao_estimada_minutos")
-    private String duracaoEstimadaMinutos;
-    @Column(name = "requer_agendamento")
-    private Boolean requerAgendamento;
-    @Column(name = "descricao_tecnica")
-    private String descricaoTecnica;
+    @Column(name = "tipo_combustivel")
+    private String tipoCombustivel;
+    private String octanagem;
+    private String composicao;
 }
