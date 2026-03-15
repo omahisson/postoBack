@@ -6,7 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
-import java.util.Date;
+import java.time.LocalDate;
 
 @Entity
 @NoArgsConstructor
@@ -18,8 +18,8 @@ public class RegistroPreco {
     private Long id;
     private BigDecimal valor;
     @Column(name = "data_inicio_vigencia")
-    private Date dataInicioVigencia;
+    private LocalDate dataInicioVigencia;
     @Column(name = "data_fim_vigencia")
-    private Date dataFimVigencia;
-    private boolean ativo;
+    private LocalDate dataFimVigencia;
+    private Boolean ativo;
 }

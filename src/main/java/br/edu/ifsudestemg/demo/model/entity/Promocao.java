@@ -27,5 +27,5 @@ public class Promocao {
     private LocalDate dataInicio;
     @Column(name = "data_fim")
     private LocalDate dataFim;
-    private boolean ativa;
+    private Boolean ativo;
 }
