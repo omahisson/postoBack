@@ -16,17 +16,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 
-public class Posto extends Endereco{
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-    @Column(name = "nome_fantasia")
-    private String nomeFantasia;
-    @Column(unique = true)
-    private String cnpj;
-
+public class Posto extends PessoaJuridica{
     @Column(name = "data_abertura")
     private LocalDate dataAbertura;
-
-    private Boolean ativo;
 }
