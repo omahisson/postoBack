@@ -6,7 +6,7 @@ import jakarta.persistence.Entity;
 
 @Entity
 @DiscriminatorValue("COLABORADOR")
-public class Colaborador extends Funcionario{
+public class Colaborador extends Funcionario {
     @Override
     public Cargo getCargo(){
         return Cargo.COLABORADOR;
