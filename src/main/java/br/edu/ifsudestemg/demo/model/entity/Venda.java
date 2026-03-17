@@ -1,5 +1,6 @@
 package br.edu.ifsudestemg.demo.model.entity;
 
+
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
