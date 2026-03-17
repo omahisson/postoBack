@@ -25,6 +25,7 @@ public class Compra {
     @Column(name = "nota_fiscal")
     private String numeroNotaFiscal;
     @Column(name = "forma_pagamento")
+    @Enumerated(EnumType.STRING)
     private FormaPagamento formaPagamento;
     private Status status;
 }

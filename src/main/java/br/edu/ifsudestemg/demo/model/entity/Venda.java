@@ -16,16 +16,16 @@ import java.time.LocalDateTime;
 public class Venda {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    Long id;
+    private Long id;
     @Column(name = "data_hora")
-    LocalDateTime dataHora;
+    private LocalDateTime dataHora;
     @Column(name = "valor_bruto")
-    BigDecimal valorBruto;
+    private BigDecimal valorBruto;
     @Column(name = "valor_desconto")
-    BigDecimal valorDesconto;
+    private BigDecimal valorDesconto;
     @Column(name = "valor_liquido")
-    BigDecimal valorLiquido;
+    private BigDecimal valorLiquido;
     @Column(name = "forma_pagamento")
-    String formaPagamento;
-    String status;
+    private String formaPagamento;
+    private String status;
 }

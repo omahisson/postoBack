@@ -20,6 +20,7 @@ public class Promocao {
     private String titulo;
     private String descricao;
     @Column(name = "tipo_desconto")
+    @Enumerated(EnumType.STRING)
     private TipoDesconto tipoDesconto;
     @Column(name = "valor_desconto")
     private BigDecimal valorDesconto;
