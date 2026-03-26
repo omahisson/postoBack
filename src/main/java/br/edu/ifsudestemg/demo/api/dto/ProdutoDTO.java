@@ -1,0 +1,25 @@
+package br.edu.ifsudestemg.demo.api.dto;
+
+import br.edu.ifsudestemg.demo.model.entity.Posto;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+import java.math.BigDecimal;
+
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+
+public class ProdutoDTO {
+    private Long id;
+    private String nome;
+    private BigDecimal preco;
+    private String descricao;
+    private String unidade;
+    private Posto posto;
+    private Boolean ativo;
+    private String codigoBarras;
+    private String marca;
+    private String categoria;
+}
