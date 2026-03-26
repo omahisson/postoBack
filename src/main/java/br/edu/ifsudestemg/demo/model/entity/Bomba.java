@@ -18,6 +18,9 @@ public class Bomba {
     private String codigo;
     @Column(name = "numero_serie")
     private String numeroSerie;
+    @ManyToOne
+    @JoinColumn(name = "posto_id")
+    private Posto posto;
 
     private Boolean ativo;
 }

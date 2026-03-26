@@ -8,11 +8,11 @@ import lombok.NoArgsConstructor;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
-@Entity
+@MappedSuperclass
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Data
-public class RegistroPreco {
+public abstract class RegistroPreco {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

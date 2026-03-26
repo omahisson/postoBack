@@ -27,5 +27,8 @@ public class Venda {
     private BigDecimal valorLiquido;
     @Column(name = "forma_pagamento")
     private String formaPagamento;
+    @ManyToOne
+    @JoinColumn(name = "posto_id")
+    private Posto posto;
     private String status;
 }

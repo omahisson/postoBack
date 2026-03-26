@@ -20,5 +20,8 @@ public abstract class Pessoa extends Endereco{
     private String nome;
     @Column(name = "data_cadastro")
     private LocalDate dataCadastro;
+    @ManyToOne
+    @JoinColumn(name = "posto_id")
+    private Posto posto;
     private Boolean ativo;
 }

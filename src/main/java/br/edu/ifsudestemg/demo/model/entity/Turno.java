@@ -20,5 +20,8 @@ public class Turno {
     private LocalTime horaInicio;
     @Column(name = "hora_fim")
     private LocalTime horaFim;
+    @ManyToOne
+    @JoinColumn(name = "posto_id")
+    private Posto posto;
     private Boolean ativo;
 }

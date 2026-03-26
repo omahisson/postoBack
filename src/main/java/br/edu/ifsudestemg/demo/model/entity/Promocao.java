@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.List;
 
 @Entity
 @Data
@@ -28,5 +29,19 @@ public class Promocao {
     private LocalDate dataInicio;
     @Column(name = "data_fim")
     private LocalDate dataFim;
+    @ManyToMany
+    @JoinTable(
+            name = "promocao_produtos",
+            joinColumns = @JoinColumn(name = "promocao_id"),
+            inverseJoinColumns = @JoinColumn (name = "produto_id")
+    )
+    private List<Produto> produtos;
+    @ManyToMany
+    @JoinTable(
+            name = "promocao_servicos",
+            joinColumns = @JoinColumn(name = "promocao_id"),
+            inverseJoinColumns = @JoinColumn (name = "servico_id")
+    )
+    private List<Servico> servicos;
     private Boolean ativo;
 }

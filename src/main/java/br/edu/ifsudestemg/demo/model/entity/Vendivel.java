@@ -1,9 +1,6 @@
 package br.edu.ifsudestemg.demo.model.entity;
 
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.MappedSuperclass;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -23,5 +20,8 @@ public abstract class Vendivel {
     private BigDecimal preco;
     private String descricao;
     private String unidade;
+    @ManyToOne
+    @JoinColumn(name = "posto_id")
+    private Posto posto;
     private Boolean ativo;
 }

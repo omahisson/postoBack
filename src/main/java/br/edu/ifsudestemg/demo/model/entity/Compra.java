@@ -27,5 +27,8 @@ public class Compra {
     @Column(name = "forma_pagamento")
     @Enumerated(EnumType.STRING)
     private FormaPagamento formaPagamento;
+    @ManyToOne
+    @JoinColumn(name = "posto_id")
+    private Posto posto;
     private Status status;
 }
