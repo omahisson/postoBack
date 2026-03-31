@@ -1,11 +1,10 @@
 package br.edu.ifsudestemg.demo.api.dto;
 
-import br.edu.ifsudestemg.demo.model.entity.Posto;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
+import br.edu.ifsudestemg.demo.model.entity.Combustivel;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.modelmapper.ModelMapper;
 
 import java.math.BigDecimal;
 
@@ -19,7 +18,7 @@ public class CombustivelDTO {
     private BigDecimal preco;
     private String descricao;
     private String unidade;
-    private long idPposto;
+    private Long idPposto;
     private Boolean ativo;
 
     private String codigoBarras;
@@ -29,4 +28,9 @@ public class CombustivelDTO {
     private String tipoCombustivel;
     private String octanagem;
     private String composicao;
+
+    public static CombustivelDTO create(Combustivel body){
+        ModelMapper modelMapper = new ModelMapper();
+        return modelMapper.map(body, CombustivelDTO.class);
+    }
 }

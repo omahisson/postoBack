@@ -1,10 +1,10 @@
 package br.edu.ifsudestemg.demo.api.dto;
 
-import br.edu.ifsudestemg.demo.model.entity.Posto;
-import jakarta.persistence.Column;
+import br.edu.ifsudestemg.demo.model.entity.Cliente;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.modelmapper.ModelMapper;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -22,7 +22,7 @@ public class ClienteDTO {
     private Long id;
     private String nome;
     private LocalDate dataCadastro;
-    private long idPposto;
+    private Long idPposto;
     private Boolean ativo;
     private String telefone;
     private String email;
@@ -32,4 +32,9 @@ public class ClienteDTO {
     private String cidade;
     private String estado;
     private String cep;
+
+    public static ClienteDTO create(Cliente body){
+        ModelMapper modelMapper = new ModelMapper();
+        return modelMapper.map(body, ClienteDTO.class);
+    }
 }

@@ -4,6 +4,7 @@ import br.edu.ifsudestemg.demo.model.entity.Posto;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.modelmapper.ModelMapper;
 
 import java.time.LocalDate;
 
@@ -24,7 +25,7 @@ public class PostoDTO {
     private Long id;
     private Long nome;
     private LocalDate dataCadastro;
-    private long idPosto;
+    private Long idPosto;
     private Boolean ativo;
 
     private String cnpj;
@@ -34,9 +35,8 @@ public class PostoDTO {
 
     private LocalDate dataAbertura;
 
-    public static PostoDTO create(Posto posto){
-        Modelmapper modelmapper = new ModelMapper();
-        PostoDTO dto = modelMapper.map(posto, PostoDTO.class);
-        return dto;
+    public static PostoDTO create(Posto body){
+        ModelMapper modelMapper = new ModelMapper();
+        return modelMapper.map(body, PostoDTO.class);
     }
 }

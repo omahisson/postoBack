@@ -1,9 +1,10 @@
 package br.edu.ifsudestemg.demo.api.dto;
 
-import br.edu.ifsudestemg.demo.model.entity.Posto;
+import br.edu.ifsudestemg.demo.model.entity.Servico;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.modelmapper.ModelMapper;
 
 import java.math.BigDecimal;
 
@@ -20,6 +21,11 @@ public class ServicoDTO {
     private BigDecimal preco;
     private String descricao;
     private String unidade;
-    private long idPosto;
+    private Long idPosto;
     private Boolean ativo;
+
+    public static ServicoDTO create(Servico body){
+        ModelMapper modelMapper = new ModelMapper();
+        return modelMapper.map(body, ServicoDTO.class);
+    }
 }
