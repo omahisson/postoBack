@@ -21,6 +21,6 @@ public class CompraDTO {
     private BigDecimal valorTotal;
     private String numeroNotaFiscal;
     private FormaPagamento formaPagamento;
-    private Posto posto;
+    private long idPosto;
     private Status status;
 }

@@ -15,6 +15,6 @@ public class TurnoDTO {
     private String nome;
     private LocalTime horaInicio;
     private LocalTime horaFim;
-    private Posto posto;
+    private long idPosto;
     private Boolean ativo;
 }

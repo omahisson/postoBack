@@ -19,7 +19,7 @@ public class CombustivelDTO {
     private BigDecimal preco;
     private String descricao;
     private String unidade;
-    private Posto posto;
+    private long idPposto;
     private Boolean ativo;
 
     private String codigoBarras;

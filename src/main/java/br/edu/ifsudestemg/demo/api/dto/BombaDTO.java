@@ -13,6 +13,6 @@ public class BombaDTO {
     private Long id;
     private String codigo;
     private String numeroSerie;
-    private Posto posto;
+    private long idPosto;
     private Boolean ativo;
 }

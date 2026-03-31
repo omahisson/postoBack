@@ -17,7 +17,7 @@ public class ProdutoDTO {
     private BigDecimal preco;
     private String descricao;
     private String unidade;
-    private Posto posto;
+    private long idPosto;
     private Boolean ativo;
     private String codigoBarras;
     private String marca;

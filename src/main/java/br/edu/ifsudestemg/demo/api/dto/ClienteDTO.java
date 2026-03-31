@@ -22,7 +22,7 @@ public class ClienteDTO {
     private Long id;
     private String nome;
     private LocalDate dataCadastro;
-    private Posto posto;
+    private long idPposto;
     private Boolean ativo;
     private String telefone;
     private String email;

@@ -22,7 +22,7 @@ public class FuncionarioDTO {
     private Long id;
     private String nome;
     private LocalDate dataCadastro;
-    private Posto posto;
+    private long idPosto;
     private Boolean ativo;
     private String telefone;
     private String email;

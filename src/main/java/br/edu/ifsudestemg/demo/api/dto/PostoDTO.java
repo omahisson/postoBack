@@ -24,7 +24,7 @@ public class PostoDTO {
     private Long id;
     private Long nome;
     private LocalDate dataCadastro;
-    private Posto posto;
+    private long idPosto;
     private Boolean ativo;
 
     private String cnpj;

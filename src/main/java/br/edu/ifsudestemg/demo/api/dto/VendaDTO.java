@@ -18,6 +18,6 @@ public class VendaDTO {
     private BigDecimal valorDesconto;
     private BigDecimal valorLiquido;
     private String formaPagamento;
-    private Posto posto;
+    private long idPosto;
     private String status;
 }

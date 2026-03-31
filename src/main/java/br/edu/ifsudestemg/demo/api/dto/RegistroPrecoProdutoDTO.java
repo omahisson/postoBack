@@ -18,5 +18,5 @@ public class RegistroPrecoProdutoDTO {
     private LocalDate dataInicioVigencia;
     private LocalDate dataFimVigencia;
     private Boolean ativo;
-    private Produto produto;
+    private long idProduto;
 }
