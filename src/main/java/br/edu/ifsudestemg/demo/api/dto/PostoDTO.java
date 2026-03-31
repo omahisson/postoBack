@@ -33,4 +33,10 @@ public class PostoDTO {
     private String inscricaoEstadual;
 
     private LocalDate dataAbertura;
+
+    public static PostoDTO create(Posto posto){
+        Modelmapper modelmapper = new ModelMapper();
+        PostoDTO dto = modelMapper.map(posto, PostoDTO.class);
+        return dto;
+    }
 }
