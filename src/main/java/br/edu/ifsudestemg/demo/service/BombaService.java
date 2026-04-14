@@ -9,13 +9,15 @@ import java.util.Optional;
 public class BombaService {
     private BombaJpaRepository repository;
 
-    public BombaService(BombaJpaRepository repository){
+    public BombaService(BombaJpaRepository repository) {
         this.repository = repository;
     }
-    public List<Bomba> getBomba(){
+
+    public List<Bomba> getBomba() {
         return repository.findAll();
     }
-    public Optional<Bomba> getBombaById(Long id){
+
+    public Optional<Bomba> getBombaById(Long id) {
         return repository.findById(id);
     }
 }
