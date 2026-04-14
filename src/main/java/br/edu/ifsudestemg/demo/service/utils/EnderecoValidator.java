@@ -29,7 +29,7 @@ public class EnderecoValidator {
             throw new ResponseStatusException(HttpStatus.BAD_GATEWAY, "Estado não deve ser vazio.");
         }
         if(cep == null || cep.trim().isEmpty()){
-            throw new ResponseStatusException(HttpStatus.BAD_GATEWAY, "Telefone não deve ser vazio.");
+            throw new ResponseStatusException(HttpStatus.BAD_GATEWAY, "CEP não deve ser vazio.");
         }
     }
 }
