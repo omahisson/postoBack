@@ -4,7 +4,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.server.ResponseStatusException;
 
 public class PessoaJuridicaValidator {
-    public static void validar(String cnpj, String razaoSocial, String nomeFantasia, String inscricaoEstadual){
+    public static void validar(String cnpj, String razaoSocial, String nomeFantasia){
         if(cnpj == null || cnpj.trim().isEmpty()){
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "CNPJ não deve ser vazio.");
         }
@@ -16,9 +16,6 @@ public class PessoaJuridicaValidator {
         }
         if(nomeFantasia == null || nomeFantasia.trim().isEmpty()){
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Nome Fantasia não deve ser vazio.");
-        }
-        if(inscricaoEstadual == null || inscricaoEstadual.trim().isEmpty()){
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Inscrição Estadual não deve ser vazio.");
         }
     }
 

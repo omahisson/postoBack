@@ -46,7 +46,7 @@ public class FornecedorService {
     private void validar(Fornecedor fornecedor){
         EnderecoValidator.validar(fornecedor.getTelefone(), fornecedor.getEmail(), fornecedor.getLogradouro(), fornecedor.getNumero(), fornecedor.getBairro(), fornecedor.getCidade(), fornecedor.getEstado(), fornecedor.getCep());
         PessoaValidator.validar(fornecedor.getNome(), fornecedor.getPosto());
-        PessoaJuridicaValidator.validar(fornecedor.getCnpj(), fornecedor.getRazaoSocial(), fornecedor.getNomeFantasia(), fornecedor.getInscricaoEstadual());
+        PessoaJuridicaValidator.validar(fornecedor.getCnpj(), fornecedor.getRazaoSocial(), fornecedor.getNomeFantasia());
         if(fornecedor.getContatoResponsavel() == null || fornecedor.getContatoResponsavel().trim().isEmpty()){
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Contato Responsável não deve ser vazio.");
         }
