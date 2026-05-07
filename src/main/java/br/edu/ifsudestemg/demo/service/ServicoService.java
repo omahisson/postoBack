@@ -4,17 +4,17 @@ import br.edu.ifsudestemg.demo.exception.RegraNegocioException;
 import br.edu.ifsudestemg.demo.model.entity.Servico;
 import br.edu.ifsudestemg.demo.model.repository.ServicoJpaRepository;
 import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
+@Service
+@RequiredArgsConstructor
 public class ServicoService {
     private ServicoJpaRepository repository;
-
-    public ServicoService(ServicoJpaRepository repository) {
-        this.repository = repository;
-    }
 
     public List<Servico> getServico(){
         return repository.findAll();
