@@ -55,5 +55,8 @@ public class BombaService {
 
     public void validar(Bomba bomba){
         validarString(bomba.getCodigo(), "Codigo invalido");
+        validarString(bomba.getNumeroSerie(), "Numero serie invalido");
+        validarNString(bomba.getPosto(), "Posto invalido");
+        validarNString(bomba.getAtivo(), "Ativo bomba invalido");
     }
 }
