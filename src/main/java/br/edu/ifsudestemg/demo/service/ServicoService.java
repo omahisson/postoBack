@@ -16,11 +16,11 @@ import java.util.Optional;
 public class ServicoService {
     private ServicoJpaRepository repository;
 
-    public List<Servico> getServico(){
+    public List<Servico> getServicos(){
         return repository.findAll();
     }
 
-    public Optional<Servico> getServicoById(Long id){
+    public Optional<Servico> getServico(Long id){
         return repository.findById(id);
     }
 

@@ -27,7 +27,7 @@ public class ClienteService {
         return repository.findAll();
     }
 
-    public Optional<Cliente> getClientes(Long id){
+    public Optional<Cliente> getCliente(Long id){
         return repository.findById(id);
     }
 
