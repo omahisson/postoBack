@@ -4,6 +4,10 @@ import br.edu.ifsudestemg.demo.exception.RegraNegocioException;
 import br.edu.ifsudestemg.demo.model.entity.Servico;
 import br.edu.ifsudestemg.demo.model.repository.ServicoJpaRepository;
 import jakarta.transaction.Transactional;
+<<<<<<< HEAD
+=======
+import lombok.RequiredArgsConstructor;
+>>>>>>> dc3577fbe146afbfe0fc8eaa31576fc55ad9b5af
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -11,18 +15,18 @@ import java.util.Objects;
 import java.util.Optional;
 
 @Service
+<<<<<<< HEAD
+=======
+@RequiredArgsConstructor
+>>>>>>> dc3577fbe146afbfe0fc8eaa31576fc55ad9b5af
 public class ServicoService {
     private ServicoJpaRepository repository;
 
-    public ServicoService(ServicoJpaRepository repository) {
-        this.repository = repository;
-    }
-
-    public List<Servico> getServico(){
+    public List<Servico> getServicos(){
         return repository.findAll();
     }
 
-    public Optional<Servico> getServicoById(Long id){
+    public Optional<Servico> getServico(Long id){
         return repository.findById(id);
     }
 

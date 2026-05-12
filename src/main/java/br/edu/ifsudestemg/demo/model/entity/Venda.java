@@ -1,6 +1,8 @@
 package br.edu.ifsudestemg.demo.model.entity;
 
 
+import br.edu.ifsudestemg.demo.infrastructuries.enums.FormaPagamento;
+import br.edu.ifsudestemg.demo.infrastructuries.enums.Status;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -26,9 +28,9 @@ public class Venda {
     @Column(name = "valor_liquido")
     private BigDecimal valorLiquido;
     @Column(name = "forma_pagamento")
-    private String formaPagamento;
+    private FormaPagamento formaPagamento;
     @ManyToOne
     @JoinColumn(name = "posto_id")
     private Posto posto;
-    private String status;
+    private Status status;
 }

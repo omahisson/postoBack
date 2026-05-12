@@ -1,5 +1,7 @@
 package br.edu.ifsudestemg.demo.api.dto;
 
+import br.edu.ifsudestemg.demo.infrastructuries.enums.FormaPagamento;
+import br.edu.ifsudestemg.demo.infrastructuries.enums.Status;
 import br.edu.ifsudestemg.demo.model.entity.Venda;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -18,9 +20,9 @@ public class VendaDTO {
     private BigDecimal valorBruto;
     private BigDecimal valorDesconto;
     private BigDecimal valorLiquido;
-    private String formaPagamento;
+    private FormaPagamento formaPagamento;
     private Long idPosto;
-    private String status;
+    private Status status;
 
     public static VendaDTO create(Venda body){
         ModelMapper modelMapper = new ModelMapper();
