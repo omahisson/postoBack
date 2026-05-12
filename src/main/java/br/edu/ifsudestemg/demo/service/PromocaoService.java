@@ -4,11 +4,13 @@ import br.edu.ifsudestemg.demo.exception.RegraNegocioException;
 import br.edu.ifsudestemg.demo.model.entity.Promocao;
 import br.edu.ifsudestemg.demo.model.repository.PromocaoJpaRepository;
 import jakarta.transaction.Transactional;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
+@Service
 public class PromocaoService {
     private PromocaoJpaRepository repository;
 

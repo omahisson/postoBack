@@ -7,5 +7,3 @@ services:
       - 'POSTGRES_USER=myuser'
     ports:
       - '5434:5432'
-    expose:
-      - '5434'

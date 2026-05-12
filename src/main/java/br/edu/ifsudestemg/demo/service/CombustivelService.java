@@ -6,6 +6,7 @@ import br.edu.ifsudestemg.demo.model.entity.Posto;
 import br.edu.ifsudestemg.demo.model.repository.CombustivelJpaRepository;
 import br.edu.ifsudestemg.demo.model.repository.PostoJpaRepository;
 import jakarta.transaction.Transactional;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Objects;
@@ -13,6 +14,7 @@ import java.util.Optional;
 
 import static br.edu.ifsudestemg.demo.service.utils.EnderecoValidator.validar;
 
+@Service
 public class CombustivelService {
     private CombustivelJpaRepository repository;
 

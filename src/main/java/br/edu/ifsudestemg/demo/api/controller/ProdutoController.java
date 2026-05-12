@@ -2,6 +2,8 @@ package br.edu.ifsudestemg.demo.api.controller;
 
 import br.edu.ifsudestemg.demo.api.dto.ProdutoDTO;
 import br.edu.ifsudestemg.demo.model.entity.Produto;
+import br.edu.ifsudestemg.demo.service.BombaService;
+import br.edu.ifsudestemg.demo.service.ProdutoService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,6 +18,8 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 @CrossOrigin
 public class ProdutoController {
+    private final ProdutoService service;
+
     @GetMapping()
     public ResponseEntity get(){
         List<Produto> produtos = service.getProduto();
@@ -27,6 +31,6 @@ public class ProdutoController {
         if(!produto.isPresent()){
             return new ResponseEntity("Produto não encontrado", HttpStatus.NOT_FOUND);
         }
-        return ResponseEntity.ok(produto.map(ProdutoDTO::create);
+        return ResponseEntity.ok(produto.map(ProdutoDTO::create));
     }
 }

@@ -4,12 +4,14 @@ import br.edu.ifsudestemg.demo.exception.RegraNegocioException;
 import br.edu.ifsudestemg.demo.model.entity.Compra;
 import br.edu.ifsudestemg.demo.model.repository.CompraJpaRepository;
 import jakarta.transaction.Transactional;
+import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
+@Service
 public class CompraService {
     private CompraJpaRepository repository;
 

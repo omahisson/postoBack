@@ -4,6 +4,7 @@ import br.edu.ifsudestemg.demo.exception.RegraNegocioException;
 import br.edu.ifsudestemg.demo.model.entity.Produto;
 import br.edu.ifsudestemg.demo.model.repository.ProdutoJpaRepository;
 import jakarta.transaction.Transactional;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Objects;
@@ -11,6 +12,7 @@ import java.util.Optional;
 
 import static br.edu.ifsudestemg.demo.service.utils.EnderecoValidator.validar;
 
+@Service
 public class ProdutoService {
     private ProdutoJpaRepository repository;
 
@@ -18,7 +20,7 @@ public class ProdutoService {
         this.repository = repository;
     }
 
-    public List<Produto> getPosto(){
+    public List<Produto> getProduto(){
         return repository.findAll();
     }
 
@@ -51,14 +53,14 @@ public class ProdutoService {
     }
 
     public void validar(Produto produto){
-        validarString(combustivel.getCodigoBarras(), "Codigo barras invalido");
-        validarString(combustivel.getMarca(), "Marca invalido");
-        validarString(combustivel.getCategoria(), "Categoria invalido");
-        validarString(combustivel.getNome(), "Nome invalido");
-        validarNString(combustivel.getPreco(), "Preço invalido"); //validar dps negativo
-        validarString(combustivel.getDescricao(), "Descricao invalido");
-        validarString(combustivel.getUnidade(), "Unidade invalido");
-        validarNString(combustivel.getPosto(), "Posto invalido");
-        validarNString(combustivel.getAtivo(), "Ativo invalido");
+        validarString(produto.getCodigoBarras(), "Codigo barras invalido");
+        validarString(produto.getMarca(), "Marca invalido");
+        validarString(produto.getCategoria(), "Categoria invalido");
+        validarString(produto.getNome(), "Nome invalido");
+        validarNString(produto.getPreco(), "Preço invalido"); //validar dps negativo
+        validarString(produto.getDescricao(), "Descricao invalido");
+        validarString(produto.getUnidade(), "Unidade invalido");
+        validarNString(produto.getPosto(), "Posto invalido");
+        validarNString(produto.getAtivo(), "Ativo invalido");
     }
 }

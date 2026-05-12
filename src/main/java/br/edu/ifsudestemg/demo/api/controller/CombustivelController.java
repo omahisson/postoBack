@@ -3,6 +3,8 @@ package br.edu.ifsudestemg.demo.api.controller;
 
 import br.edu.ifsudestemg.demo.api.dto.CombustivelDTO;
 import br.edu.ifsudestemg.demo.model.entity.Combustivel;
+import br.edu.ifsudestemg.demo.service.BombaService;
+import br.edu.ifsudestemg.demo.service.CombustivelService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,6 +19,8 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 @CrossOrigin
 public class CombustivelController {
+    private final CombustivelService service;
+
     @GetMapping()
     public ResponseEntity get(){
         List<Combustivel> combustiveis = service.getCombustivel();
@@ -28,6 +32,6 @@ public class CombustivelController {
         if(!combustivel.isPresent()){
             return new ResponseEntity("Combustivel não encontrado", HttpStatus.NOT_FOUND);
         }
-        return ResponseEntity.ok(combustivel.map(CombustivelDTO::create);
+        return ResponseEntity.ok(combustivel.map(CombustivelDTO::create));
     }
 }

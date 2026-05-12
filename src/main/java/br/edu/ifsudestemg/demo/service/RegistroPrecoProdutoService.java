@@ -5,11 +5,13 @@ import br.edu.ifsudestemg.demo.model.entity.RegistroPreco;
 import br.edu.ifsudestemg.demo.model.entity.RegistroPrecoProduto;
 import br.edu.ifsudestemg.demo.model.repository.RegistroPrecoProdutoJpaRepository;
 import jakarta.transaction.Transactional;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
+@Service
 public class RegistroPrecoProdutoService{
     private RegistroPrecoProdutoJpaRepository repository;
 

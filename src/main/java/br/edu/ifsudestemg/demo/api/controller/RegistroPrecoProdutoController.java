@@ -10,12 +10,14 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import br.edu.ifsudestemg.demo.service.RegistroPrecoProdutoService;
 
 @RestController
 @RequestMapping("/api/v1/registroPrecoProduto")
 @RequiredArgsConstructor
 @CrossOrigin
 public class RegistroPrecoProdutoController{
+    private final RegistroPrecoProdutoService service;
     @GetMapping()
     public ResponseEntity get(){
         List<RegistroPrecoProduto> registroPrecoProdutos = service.getRegistroPrecoProduto();
@@ -27,6 +29,6 @@ public class RegistroPrecoProdutoController{
         if(!registroPrecoProduto.isPresent()){
             return new ResponseEntity("Registro de preço de produto não encontrado", HttpStatus.NOT_FOUND);
         }
-        return ResponseEntity.ok(registroPrecoProduto.map(RegistroPrecoProdutoDTO::create);
+        return ResponseEntity.ok(registroPrecoProduto.map(RegistroPrecoProdutoDTO::create));
     }
 }

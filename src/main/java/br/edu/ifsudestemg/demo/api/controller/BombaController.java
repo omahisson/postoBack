@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import br.edu.ifsudestemg.demo.service.BombaService;
 
 import java.util.List;
 import java.util.Optional;
@@ -16,6 +17,9 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 @CrossOrigin
 public class BombaController {
+
+    private final BombaService service;
+
     @GetMapping()
     public ResponseEntity get(){
         List<Bomba> bombas = service.getBomba();
@@ -27,6 +31,6 @@ public class BombaController {
         if(!bomba.isPresent()){
             return new ResponseEntity("Bomba não encontrado", HttpStatus.NOT_FOUND);
         }
-        return ResponseEntity.ok(bomba.map(BombaDTO::create);
+        return ResponseEntity.ok(bomba.map(BombaDTO::create));
     }
 }
