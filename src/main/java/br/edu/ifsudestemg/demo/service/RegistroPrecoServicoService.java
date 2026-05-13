@@ -1,7 +1,6 @@
 package br.edu.ifsudestemg.demo.service;
 
 import br.edu.ifsudestemg.demo.exception.RegraNegocioException;
-import br.edu.ifsudestemg.demo.model.entity.RegistroPrecoProduto;
 import br.edu.ifsudestemg.demo.model.entity.RegistroPrecoServico;
 import br.edu.ifsudestemg.demo.model.repository.RegistroPrecoServicoJpaRepository;
 import jakarta.transaction.Transactional;
@@ -53,7 +52,7 @@ public class RegistroPrecoServicoService{
             throw new RegraNegocioException("Status inválido.");
         }
         if (registroPrecoServico.getServico() == null) {
-            throw new RegraNegocioException("Produto inválido.");
+            throw new RegraNegocioException("Serviço inválido.");
         }
     }
 

@@ -17,7 +17,7 @@ import java.util.List;
 public class Promocao {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    private Long id;
     private String titulo;
     private String descricao;
     @Column(name = "tipo_desconto")
