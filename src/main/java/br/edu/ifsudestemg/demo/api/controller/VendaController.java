@@ -4,6 +4,7 @@ import br.edu.ifsudestemg.demo.api.dto.VendaDTO;
 import br.edu.ifsudestemg.demo.model.entity.Venda;
 import br.edu.ifsudestemg.demo.service.VendaService;
 import lombok.RequiredArgsConstructor;
+import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -31,5 +32,25 @@ public class VendaController {
             return new ResponseEntity("Combustivel não encontrado", HttpStatus.NOT_FOUND);
         }
         return ResponseEntity.ok(venda.map(VendaDTO::create));
+    }
+    @PostMapping
+    public ResponseEntity<VendaDTO> criar(@RequestBody VendaDTO payload){
+        Venda entity = converter(payload);
+        VendaDTO dto = VendaDTO.create(service.salvar(entity));
+        return ResponseEntity.status(HttpStatus.CREATED).body(dto);
+    }
+    @PutMapping("/{id}")
+    public ResponseEntity<VendaDTO> atualizar(@PathVariable Long id, @RequestBody VendaDTO payload){
+        if (service.getVenda(id).isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(payload);
+        }
+        Venda venda = converter(payload);
+        venda.setId(id);
+        VendaDTO dto = VendaDTO.create(service.salvar(venda));
+        return ResponseEntity.ok(dto);
+    }
+    public Venda converter(VendaDTO dto) {
+        ModelMapper modelMapper = new ModelMapper();
+        return modelMapper.map(dto, Venda.class);
     }
 }

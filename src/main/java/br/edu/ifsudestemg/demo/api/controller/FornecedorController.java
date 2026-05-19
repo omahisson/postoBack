@@ -1,11 +1,10 @@
 package br.edu.ifsudestemg.demo.api.controller;
 
-import br.edu.ifsudestemg.demo.api.dto.ClienteDTO;
 import br.edu.ifsudestemg.demo.api.dto.FornecedorDTO;
-import br.edu.ifsudestemg.demo.model.entity.Cliente;
 import br.edu.ifsudestemg.demo.model.entity.Fornecedor;
 import br.edu.ifsudestemg.demo.service.FornecedorService;
 import lombok.RequiredArgsConstructor;
+import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -33,5 +32,25 @@ public class FornecedorController {
             return new ResponseEntity("Combustivel não encontrado", HttpStatus.NOT_FOUND);
         }
         return ResponseEntity.ok(fornecedor.map(FornecedorDTO::create));
+    }
+    @PostMapping
+    public ResponseEntity<FornecedorDTO> criar(@RequestBody FornecedorDTO payload){
+        Fornecedor entity = converter(payload);
+        FornecedorDTO dto = FornecedorDTO.create(service.salvar(entity));
+        return ResponseEntity.status(HttpStatus.CREATED).body(dto);
+    }
+    @PutMapping("/{id}")
+    public ResponseEntity<FornecedorDTO> atualizar(@PathVariable Long id, @RequestBody FornecedorDTO payload){
+        if (service.getFornecedor(id).isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(payload);
+        }
+        Fornecedor fornecedor = converter(payload);
+        fornecedor.setId(id);
+        FornecedorDTO dto = FornecedorDTO.create(service.salvar(fornecedor));
+        return ResponseEntity.ok(dto);
+    }
+    public Fornecedor converter(FornecedorDTO dto) {
+        ModelMapper modelMapper = new ModelMapper();
+        return modelMapper.map(dto, Fornecedor.class);
     }
 }
