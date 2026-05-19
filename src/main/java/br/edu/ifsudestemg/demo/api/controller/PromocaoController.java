@@ -1,6 +1,7 @@
 package br.edu.ifsudestemg.demo.api.controller;
 
 import br.edu.ifsudestemg.demo.api.dto.PromocaoDTO;
+import br.edu.ifsudestemg.demo.exception.RegraNegocioException;
 import br.edu.ifsudestemg.demo.model.entity.Promocao;
 import br.edu.ifsudestemg.demo.service.PromocaoService;
 import lombok.RequiredArgsConstructor;
@@ -52,6 +53,20 @@ public class PromocaoController {
         promocao.setId(id);
         service.salvar(promocao);
         return ResponseEntity.ok(promocao);
+    }
+
+    @DeleteMapping("{id}")
+    public ResponseEntity excluir(@PathVariable("id") Long id) {
+        Optional<Promocao> promocao = service.getPromocaoById(id);
+        if (!promocao.isPresent()) {
+            return new ResponseEntity("Promocao não encontrada", HttpStatus.NOT_FOUND);
+        }
+        try {
+            service.excluir(promocao.get());
+            return new ResponseEntity(HttpStatus.NO_CONTENT);
+        } catch (RegraNegocioException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 
     public Promocao converter(PromocaoDTO dto) {

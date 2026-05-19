@@ -1,6 +1,7 @@
 package br.edu.ifsudestemg.demo.api.controller;
 
 import br.edu.ifsudestemg.demo.api.dto.CompraDTO;
+import br.edu.ifsudestemg.demo.exception.RegraNegocioException;
 import br.edu.ifsudestemg.demo.model.entity.Compra;
 import br.edu.ifsudestemg.demo.service.CompraService;
 import lombok.RequiredArgsConstructor;
@@ -51,6 +52,20 @@ public class CompraController {
         compra.setId(id);
         service.salvar(compra);
         return ResponseEntity.ok(compra);
+    }
+
+    @DeleteMapping("{id}")
+    public ResponseEntity excluir(@PathVariable("id") Long id) {
+        Optional<Compra> compra = service.getCompraById(id);
+        if (!compra.isPresent()) {
+            return new ResponseEntity("Compra não encontrada", HttpStatus.NOT_FOUND);
+        }
+        try {
+            service.excluir(compra.get());
+            return new ResponseEntity(HttpStatus.NO_CONTENT);
+        } catch (RegraNegocioException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 
     public Compra converter(CompraDTO dto){

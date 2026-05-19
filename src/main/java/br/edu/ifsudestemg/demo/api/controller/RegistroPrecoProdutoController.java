@@ -1,6 +1,7 @@
 package br.edu.ifsudestemg.demo.api.controller;
 
 import br.edu.ifsudestemg.demo.api.dto.RegistroPrecoProdutoDTO;
+import br.edu.ifsudestemg.demo.exception.RegraNegocioException;
 import br.edu.ifsudestemg.demo.model.entity.RegistroPrecoProduto;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
@@ -52,6 +53,20 @@ public class RegistroPrecoProdutoController{
         registroPrecoProduto.setId(id);
         registroPrecoProduto = service.salvar(registroPrecoProduto);
         return ResponseEntity.ok(registroPrecoProduto);
+    }
+
+    @DeleteMapping("{id}")
+    public ResponseEntity excluir(@PathVariable("id") Long id) {
+        Optional<RegistroPrecoProduto> registroPrecoProduto = service.getRegistroPrecoProdutoById(id);
+        if (!registroPrecoProduto.isPresent()) {
+            return new ResponseEntity("Registro de preco de produto não encontrado", HttpStatus.NOT_FOUND);
+        }
+        try {
+            service.excluir(registroPrecoProduto.get());
+            return new ResponseEntity(HttpStatus.NO_CONTENT);
+        } catch (RegraNegocioException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 
     public RegistroPrecoProduto converter(RegistroPrecoProdutoDTO dto) {
