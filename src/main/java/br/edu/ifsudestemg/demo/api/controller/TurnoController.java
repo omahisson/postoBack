@@ -1,11 +1,10 @@
 package br.edu.ifsudestemg.demo.api.controller;
 
-import br.edu.ifsudestemg.demo.api.dto.FuncionarioDTO;
 import br.edu.ifsudestemg.demo.api.dto.TurnoDTO;
-import br.edu.ifsudestemg.demo.model.entity.Funcionario;
 import br.edu.ifsudestemg.demo.model.entity.Turno;
 import br.edu.ifsudestemg.demo.service.TurnoService;
 import lombok.RequiredArgsConstructor;
+import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -33,5 +32,25 @@ public class TurnoController {
             return new ResponseEntity("Combustivel não encontrado", HttpStatus.NOT_FOUND);
         }
         return ResponseEntity.ok(turno.map(TurnoDTO::create));
+    }
+    @PostMapping
+    public ResponseEntity<TurnoDTO> criar(@RequestBody TurnoDTO payload){
+        Turno entity = converter(payload);
+        TurnoDTO dto = TurnoDTO.create(service.salvar(entity));
+        return ResponseEntity.status(HttpStatus.CREATED).body(dto);
+    }
+    @PutMapping("/{id}")
+    public ResponseEntity<TurnoDTO> atualizar(@PathVariable Long id, @RequestBody TurnoDTO payload){
+        if (service.getTurno(id).isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(payload);
+        }
+        Turno turno = converter(payload);
+        turno.setId(id);
+        TurnoDTO dto = TurnoDTO.create(service.salvar(turno));
+        return ResponseEntity.ok(dto);
+    }
+    public Turno converter(TurnoDTO dto) {
+        ModelMapper modelMapper = new ModelMapper();
+        return modelMapper.map(dto, Turno.class);
     }
 }
