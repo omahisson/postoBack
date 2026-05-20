@@ -1,45 +1,37 @@
 package br.edu.ifsudestemg.demo.config;
 
+import io.swagger.v3.oas.models.OpenAPI;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import springfox.documentation.builders.ApiInfoBuilder;
-import springfox.documentation.builders.PathSelectors;
-import springfox.documentation.builders.RequestHandlerSelectors;
-import springfox.documentation.service.*;
-import springfox.documentation.spi.DocumentationType;
-import springfox.documentation.spring.web.plugins.Docket;
-import springfox.documentation.swagger2.annotations.EnableSwagger2;
+import io.swagger.v3.oas.models.info.Contact;
+import io.swagger.v3.oas.models.info.Info;
+import org.springdoc.core.models.GroupedOpenApi;
 
 
 @Configuration
-@EnableSwagger2
 public class SwaggerConfig {
 
     @Bean
-    public Docket docket(){
-        return new Docket(DocumentationType.SWAGGER_2)
-                .useDefaultResponseMessages(false)
-                .select()
-                .apis(RequestHandlerSelectors
-                        .basePackage("br.edu.ifsudestemg.demo.api.controller"))
-                .paths(PathSelectors.any())
-                .build()
-                .apiInfo(apiInfo());
+    public OpenAPI customOpenAPI(){
+        return new OpenAPI()
+                .info(new Info()
+                        .title("POSTOBACK API")
+                        .description("API do Sistema de Gestão de Postos Combustíveis")
+                        .version("1.0")
+                        .contact(new Contact()
+                                .name("Allan Mahisson, Pedro Faria, Marco Gabriel")
+                                .url("https://github.com/omahisson/postoBack")
+                                .email("mahisson@icloud.com")
+                        )
+                );
     }
 
-    private ApiInfo apiInfo(){
-        return new ApiInfoBuilder()
-                .title("POSTOBACK API")
-                .description("API do Sistema de Gestão de Postos Combustíveis")
-                .version("1.0")
-                .contact(contact())
+    @Bean
+    public GroupedOpenApi publicApi() {
+        return GroupedOpenApi.builder()
+                .group("postoback")
+                .packagesToScan("br.edu.ifsudestemg.demo.api.controller")
                 .build();
-    }
-
-    private Contact contact(){
-        return new Contact("Allan Mahisson, Pedro Faria, Marco Gabriel"
-                , "https://github.com/omahisson/postoBack",
-                "mahisson@icloud.com");
     }
 
 }
