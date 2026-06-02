@@ -1,6 +1,7 @@
 package br.edu.ifsudestemg.demo.api.controller;
 
 import br.edu.ifsudestemg.demo.api.dto.TurnoDTO;
+import br.edu.ifsudestemg.demo.exception.RegraNegocioException;
 import br.edu.ifsudestemg.demo.model.entity.Turno;
 import br.edu.ifsudestemg.demo.service.TurnoService;
 import lombok.RequiredArgsConstructor;
@@ -29,7 +30,7 @@ public class TurnoController {
     public ResponseEntity<Optional<TurnoDTO>> get(@PathVariable Long id){
         Optional<Turno> turno = service.getTurno(id);
         if(turno.isEmpty()){
-            return new ResponseEntity("Combustivel não encontrado", HttpStatus.NOT_FOUND);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
         return ResponseEntity.ok(turno.map(TurnoDTO::create));
     }
@@ -48,6 +49,19 @@ public class TurnoController {
         turno.setId(id);
         TurnoDTO dto = TurnoDTO.create(service.salvar(turno));
         return ResponseEntity.ok(dto);
+    }
+    @DeleteMapping("{id}")
+    public ResponseEntity<String> excluir(@PathVariable Long id) {
+        Optional<Turno> turno = service.getTurno(id);
+        if (turno.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Turno não encontrada");
+        }
+        try {
+            service.excluir(turno.get());
+            return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+        } catch (RegraNegocioException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
     public Turno converter(TurnoDTO dto) {
         ModelMapper modelMapper = new ModelMapper();

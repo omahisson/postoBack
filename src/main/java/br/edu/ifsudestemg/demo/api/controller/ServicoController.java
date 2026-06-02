@@ -1,6 +1,7 @@
 package br.edu.ifsudestemg.demo.api.controller;
 
 import br.edu.ifsudestemg.demo.api.dto.ServicoDTO;
+import br.edu.ifsudestemg.demo.exception.RegraNegocioException;
 import br.edu.ifsudestemg.demo.model.entity.Servico;
 import br.edu.ifsudestemg.demo.service.ServicoService;
 import lombok.RequiredArgsConstructor;
@@ -29,7 +30,7 @@ public class ServicoController {
     public ResponseEntity<Optional<ServicoDTO>> get(@PathVariable Long id){
         Optional<Servico> servico = service.getServico(id);
         if(servico.isEmpty()){
-            return new ResponseEntity("Combustivel não encontrado", HttpStatus.NOT_FOUND);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
         return ResponseEntity.ok(servico.map(ServicoDTO::create));
     }
@@ -48,6 +49,19 @@ public class ServicoController {
         servico.setId(id);
         ServicoDTO dto = ServicoDTO.create(service.salvar(servico));
         return ResponseEntity.ok(dto);
+    }
+    @DeleteMapping("{id}")
+    public ResponseEntity<String> excluir(@PathVariable Long id) {
+        Optional<Servico> servico = service.getServico(id);
+        if (servico.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Servico não encontrada");
+        }
+        try {
+            service.excluir(servico.get());
+            return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+        } catch (RegraNegocioException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
     public Servico converter(ServicoDTO dto) {
         ModelMapper modelMapper = new ModelMapper();

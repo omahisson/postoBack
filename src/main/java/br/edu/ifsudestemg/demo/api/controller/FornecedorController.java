@@ -1,6 +1,7 @@
 package br.edu.ifsudestemg.demo.api.controller;
 
 import br.edu.ifsudestemg.demo.api.dto.FornecedorDTO;
+import br.edu.ifsudestemg.demo.exception.RegraNegocioException;
 import br.edu.ifsudestemg.demo.model.entity.Fornecedor;
 import br.edu.ifsudestemg.demo.service.FornecedorService;
 import lombok.RequiredArgsConstructor;
@@ -29,7 +30,7 @@ public class FornecedorController {
     public ResponseEntity<Optional<FornecedorDTO>> get(@PathVariable Long id){
         Optional<Fornecedor> fornecedor = service.getFornecedor(id);
         if(fornecedor.isEmpty()){
-            return new ResponseEntity("Combustivel não encontrado", HttpStatus.NOT_FOUND);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
         return ResponseEntity.ok(fornecedor.map(FornecedorDTO::create));
     }
@@ -48,6 +49,19 @@ public class FornecedorController {
         fornecedor.setId(id);
         FornecedorDTO dto = FornecedorDTO.create(service.salvar(fornecedor));
         return ResponseEntity.ok(dto);
+    }
+    @DeleteMapping("{id}")
+    public ResponseEntity<String> excluir(@PathVariable Long id) {
+        Optional<Fornecedor> fornecedor = service.getFornecedor(id);
+        if (fornecedor.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Fornecedor não encontrada");
+        }
+        try {
+            service.excluir(fornecedor.get());
+            return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+        } catch (RegraNegocioException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
     public Fornecedor converter(FornecedorDTO dto) {
         ModelMapper modelMapper = new ModelMapper();

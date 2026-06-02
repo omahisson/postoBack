@@ -1,6 +1,7 @@
 package br.edu.ifsudestemg.demo.api.controller;
 
 import br.edu.ifsudestemg.demo.api.dto.ClienteDTO;
+import br.edu.ifsudestemg.demo.exception.RegraNegocioException;
 import br.edu.ifsudestemg.demo.model.entity.Cliente;
 import br.edu.ifsudestemg.demo.service.ClienteService;
 import lombok.RequiredArgsConstructor;
@@ -49,7 +50,19 @@ public class ClienteController {
         ClienteDTO dto = ClienteDTO.create(service.salvar(cliente));
         return ResponseEntity.ok(dto);
     }
-
+    @DeleteMapping("{id}")
+    public ResponseEntity<String> excluir(@PathVariable Long id) {
+        Optional<Cliente> cliente = service.getCliente(id);
+        if (cliente.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Cliente não encontrada");
+        }
+        try {
+            service.excluir(cliente.get());
+            return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+        } catch (RegraNegocioException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
     public Cliente converter(ClienteDTO dto) {
         ModelMapper modelMapper = new ModelMapper();
         return modelMapper.map(dto, Cliente.class);

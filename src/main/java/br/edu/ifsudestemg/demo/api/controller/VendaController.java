@@ -1,6 +1,7 @@
 package br.edu.ifsudestemg.demo.api.controller;
 
 import br.edu.ifsudestemg.demo.api.dto.VendaDTO;
+import br.edu.ifsudestemg.demo.exception.RegraNegocioException;
 import br.edu.ifsudestemg.demo.model.entity.Venda;
 import br.edu.ifsudestemg.demo.service.VendaService;
 import lombok.RequiredArgsConstructor;
@@ -29,7 +30,7 @@ public class VendaController {
     public ResponseEntity<Optional<VendaDTO>> get(@PathVariable Long id){
         Optional<Venda> venda = service.getVenda(id);
         if(venda.isEmpty()){
-            return new ResponseEntity("Combustivel não encontrado", HttpStatus.NOT_FOUND);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
         return ResponseEntity.ok(venda.map(VendaDTO::create));
     }
@@ -48,6 +49,19 @@ public class VendaController {
         venda.setId(id);
         VendaDTO dto = VendaDTO.create(service.salvar(venda));
         return ResponseEntity.ok(dto);
+    }
+    @DeleteMapping("{id}")
+    public ResponseEntity<String> excluir(@PathVariable Long id) {
+        Optional<Venda> venda = service.getVenda(id);
+        if (venda.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Venda não encontrada");
+        }
+        try {
+            service.excluir(venda.get());
+            return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+        } catch (RegraNegocioException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
     public Venda converter(VendaDTO dto) {
         ModelMapper modelMapper = new ModelMapper();
