@@ -61,6 +61,20 @@ public class PostoController {
         }
     }
 
+    @DeleteMapping("{id}")
+    public ResponseEntity<String> excluir(@PathVariable("id") Long id) {
+        Optional<Posto> posto = service.getPostoById(id);
+        if (posto.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Posto não encontrado");
+        }
+        try {
+            service.excluir(posto.get());
+            return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+        } catch (RegraNegocioException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
     public Posto converter(PostoDTO dto) {
         ModelMapper modelMapper = new ModelMapper();
         Posto posto = modelMapper.map(dto, Posto.class);

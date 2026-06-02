@@ -61,6 +61,20 @@ public class ProdutoController {
         }
     }
 
+    @DeleteMapping("{id}")
+    public ResponseEntity<String> excluir(@PathVariable("id") Long id) {
+        Optional<Produto> produto = service.getProdutoById(id);
+        if (produto.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Produto não encontrado");
+        }
+        try {
+            service.excluir(produto.get());
+            return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+        } catch (RegraNegocioException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
     public Produto converter(ProdutoDTO dto) {
         ModelMapper modelMapper = new ModelMapper();
         Produto produto = modelMapper.map(dto, Produto.class);

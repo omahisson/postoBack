@@ -62,6 +62,20 @@ public class CombustivelController {
         }
     }
 
+    @DeleteMapping("{id}")
+    public ResponseEntity<String> excluir(@PathVariable("id") Long id) {
+        Optional<Combustivel> combustivel = service.getCombustivelById(id);
+        if (combustivel.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Combustivel não encontrado");
+        }
+        try {
+            service.excluir(combustivel.get());
+            return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+        } catch (RegraNegocioException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
     public Combustivel converter(CombustivelDTO dto) {
         ModelMapper modelMapper = new ModelMapper();
         Combustivel combustivel = modelMapper.map(dto, Combustivel.class);

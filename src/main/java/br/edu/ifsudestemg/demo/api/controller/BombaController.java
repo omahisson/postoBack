@@ -69,6 +69,20 @@ public class BombaController {
         }
     }
 
+    @DeleteMapping("{id}")
+    public ResponseEntity<String> excluir(@PathVariable("id") Long id) {
+        Optional<Bomba> bomba = service.getBombaById(id);
+        if (bomba.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Bomba não encontrada");
+        }
+        try {
+            service.excluir(bomba.get());
+            return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+        } catch (RegraNegocioException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
     public Bomba converter(BombaDTO dto) {
         ModelMapper modelMapper = new ModelMapper();
         Bomba bomba = modelMapper.map(dto, Bomba.class);
