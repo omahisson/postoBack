@@ -18,7 +18,7 @@ public class CombustivelDTO {
     private BigDecimal preco;
     private String descricao;
     private String unidade;
-    private Long idPposto;
+    private Long idPosto;
     private Boolean ativo;
 
     private String codigoBarras;
@@ -31,6 +31,10 @@ public class CombustivelDTO {
 
     public static CombustivelDTO create(Combustivel body){
         ModelMapper modelMapper = new ModelMapper();
-        return modelMapper.map(body, CombustivelDTO.class);
+        CombustivelDTO dto = modelMapper.map(body, CombustivelDTO.class);
+        if (body.getPosto() != null) {
+            dto.setIdPosto(body.getPosto().getId());
+        }
+        return dto;
     }
 }

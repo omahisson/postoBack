@@ -15,9 +15,11 @@ import static br.edu.ifsudestemg.demo.service.utils.EnderecoValidator.validar;
 @Service
 public class ProdutoService {
     private ProdutoJpaRepository repository;
+    private DeleteDependencyCleaner deleteDependencyCleaner;
 
-    public ProdutoService(ProdutoJpaRepository repository){
+    public ProdutoService(ProdutoJpaRepository repository, DeleteDependencyCleaner deleteDependencyCleaner){
         this.repository = repository;
+        this.deleteDependencyCleaner = deleteDependencyCleaner;
     }
 
     public List<Produto> getProduto(){
@@ -37,6 +39,7 @@ public class ProdutoService {
     @Transactional
     public void excluir(Produto produto){
         Objects.requireNonNull(produto.getId());;
+        deleteDependencyCleaner.limparVinculosDoProduto(produto);
         repository.delete(produto);
     }
 

@@ -20,6 +20,7 @@ import java.util.stream.Collectors;
 @CrossOrigin
 public class PostoController {
     private final PostoService service;
+    private final EntityReferenceResolver references;
 
     @GetMapping()
     public ResponseEntity get(){
@@ -39,8 +40,9 @@ public class PostoController {
     public ResponseEntity post(@RequestBody PostoDTO dto) {
         try {
             Posto posto = converter(dto);
+            posto.setId(null);
             posto = service.salvar(posto);
-            return new ResponseEntity(posto, HttpStatus.CREATED);
+            return new ResponseEntity(PostoDTO.create(posto), HttpStatus.CREATED);
         } catch (RegraNegocioException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
@@ -54,8 +56,8 @@ public class PostoController {
         try {
             Posto posto = converter(dto);
             posto.setId(id);
-            service.salvar(posto);
-            return ResponseEntity.ok(posto);
+            posto = service.salvar(posto);
+            return ResponseEntity.ok(PostoDTO.create(posto));
         } catch (RegraNegocioException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
@@ -78,6 +80,7 @@ public class PostoController {
     public Posto converter(PostoDTO dto) {
         ModelMapper modelMapper = new ModelMapper();
         Posto posto = modelMapper.map(dto, Posto.class);
+        posto.setPosto(references.buscarPosto(dto.getIdPosto()));
         return posto;
     }
 }

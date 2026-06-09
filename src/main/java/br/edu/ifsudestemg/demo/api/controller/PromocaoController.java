@@ -21,6 +21,7 @@ import java.util.stream.Collectors;
 public class PromocaoController {
 
     private final PromocaoService service;
+    private final EntityReferenceResolver references;
 
     @GetMapping
     public ResponseEntity get(){
@@ -40,19 +41,20 @@ public class PromocaoController {
     @PostMapping
     public ResponseEntity post(@RequestBody PromocaoDTO dto){
         Promocao promocao = converter(dto);
+        promocao.setId(null);
         promocao = service.salvar(promocao);
-        return new ResponseEntity(promocao, HttpStatus.CREATED);
+        return new ResponseEntity(PromocaoDTO.create(promocao), HttpStatus.CREATED);
     }
 
-    @PutMapping
+    @PutMapping("/{id}")
     public ResponseEntity put(@PathVariable("id") Long id, @RequestBody PromocaoDTO dto){
         if(!service.getPromocaoById(id).isPresent()){
             return new ResponseEntity("Promoção não encontrada", HttpStatus.NOT_FOUND);
         }
         Promocao promocao = converter(dto);
         promocao.setId(id);
-        service.salvar(promocao);
-        return ResponseEntity.ok(promocao);
+        promocao = service.salvar(promocao);
+        return ResponseEntity.ok(PromocaoDTO.create(promocao));
     }
 
     @DeleteMapping("{id}")
@@ -72,6 +74,8 @@ public class PromocaoController {
     public Promocao converter(PromocaoDTO dto) {
         ModelMapper modelMapper = new ModelMapper();
         Promocao promocao = modelMapper.map(dto, Promocao.class);
+        promocao.setProdutos(references.buscarProdutos(dto.getIdsProdutos()));
+        promocao.setServicos(references.buscarServicos(dto.getIdsServicos()));
         return promocao;
     }
 }

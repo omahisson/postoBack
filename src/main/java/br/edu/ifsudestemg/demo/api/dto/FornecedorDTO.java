@@ -37,6 +37,10 @@ public class FornecedorDTO {
 
     public static FornecedorDTO create(Fornecedor body){
         ModelMapper modelMapper = new ModelMapper();
-        return modelMapper.map(body, FornecedorDTO.class);
+        FornecedorDTO dto = modelMapper.map(body, FornecedorDTO.class);
+        if (body.getPosto() != null) {
+            dto.setIdPosto(body.getPosto().getId());
+        }
+        return dto;
     }
 }

@@ -1,6 +1,5 @@
 package br.edu.ifsudestemg.demo.api.controller;
 
-
 import br.edu.ifsudestemg.demo.api.dto.CombustivelDTO;
 import br.edu.ifsudestemg.demo.exception.RegraNegocioException;
 import br.edu.ifsudestemg.demo.model.entity.Combustivel;
@@ -9,7 +8,15 @@ import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 import java.util.Optional;
@@ -21,42 +28,45 @@ import java.util.stream.Collectors;
 @CrossOrigin
 public class CombustivelController {
     private final CombustivelService service;
+    private final EntityReferenceResolver references;
 
-    @GetMapping()
-    public ResponseEntity get(){
+    @GetMapping
+    public ResponseEntity<List<CombustivelDTO>> get() {
         List<Combustivel> combustiveis = service.getCombustivel();
         return ResponseEntity.ok(combustiveis.stream().map(CombustivelDTO::create).collect(Collectors.toList()));
     }
+
     @GetMapping("/{id}")
-    public ResponseEntity get(@PathVariable("id") Long id){
+    public ResponseEntity<?> get(@PathVariable("id") Long id) {
         Optional<Combustivel> combustivel = service.getCombustivelById(id);
-        if(!combustivel.isPresent()){
-            return new ResponseEntity("Combustivel não encontrado", HttpStatus.NOT_FOUND);
+        if (combustivel.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Combustivel nao encontrado");
         }
         return ResponseEntity.ok(combustivel.map(CombustivelDTO::create));
     }
 
-    @PostMapping()
-    public ResponseEntity post(@RequestBody CombustivelDTO dto) {
+    @PostMapping
+    public ResponseEntity<?> post(@RequestBody CombustivelDTO dto) {
         try {
             Combustivel combustivel = converter(dto);
+            combustivel.setId(null);
             combustivel = service.salvar(combustivel);
-            return new ResponseEntity(combustivel, HttpStatus.CREATED);
+            return ResponseEntity.status(HttpStatus.CREATED).body(CombustivelDTO.create(combustivel));
         } catch (RegraNegocioException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
 
-    @PutMapping("{id}")
-    public ResponseEntity atualizar(@PathVariable("id") Long id, @RequestBody CombustivelDTO dto) {
-        if (!service.getCombustivelById(id).isPresent()) {
-            return new ResponseEntity("Combustivel não encontrada", HttpStatus.NOT_FOUND);
+    @PutMapping("/{id}")
+    public ResponseEntity<?> atualizar(@PathVariable("id") Long id, @RequestBody CombustivelDTO dto) {
+        if (service.getCombustivelById(id).isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Combustivel nao encontrado");
         }
         try {
             Combustivel combustivel = converter(dto);
             combustivel.setId(id);
-            service.salvar(combustivel);
-            return ResponseEntity.ok(combustivel);
+            combustivel = service.salvar(combustivel);
+            return ResponseEntity.ok(CombustivelDTO.create(combustivel));
         } catch (RegraNegocioException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
@@ -66,7 +76,7 @@ public class CombustivelController {
     public ResponseEntity<String> excluir(@PathVariable("id") Long id) {
         Optional<Combustivel> combustivel = service.getCombustivelById(id);
         if (combustivel.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Combustivel não encontrado");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Combustivel nao encontrado");
         }
         try {
             service.excluir(combustivel.get());
@@ -79,6 +89,7 @@ public class CombustivelController {
     public Combustivel converter(CombustivelDTO dto) {
         ModelMapper modelMapper = new ModelMapper();
         Combustivel combustivel = modelMapper.map(dto, Combustivel.class);
+        combustivel.setPosto(references.buscarPosto(dto.getIdPosto()));
         return combustivel;
     }
 }

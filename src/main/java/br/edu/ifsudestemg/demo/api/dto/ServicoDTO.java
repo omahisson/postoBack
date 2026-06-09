@@ -26,6 +26,10 @@ public class ServicoDTO {
 
     public static ServicoDTO create(Servico body){
         ModelMapper modelMapper = new ModelMapper();
-        return modelMapper.map(body, ServicoDTO.class);
+        ServicoDTO dto = modelMapper.map(body, ServicoDTO.class);
+        if (body.getPosto() != null) {
+            dto.setIdPosto(body.getPosto().getId());
+        }
+        return dto;
     }
 }

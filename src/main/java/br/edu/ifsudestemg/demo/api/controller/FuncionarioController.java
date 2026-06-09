@@ -2,7 +2,11 @@ package br.edu.ifsudestemg.demo.api.controller;
 
 import br.edu.ifsudestemg.demo.api.dto.FuncionarioDTO;
 import br.edu.ifsudestemg.demo.exception.RegraNegocioException;
+import br.edu.ifsudestemg.demo.infrastructuries.enums.Cargo;
+import br.edu.ifsudestemg.demo.model.entity.Administrador;
+import br.edu.ifsudestemg.demo.model.entity.Colaborador;
 import br.edu.ifsudestemg.demo.model.entity.Funcionario;
+import br.edu.ifsudestemg.demo.model.entity.Gerente;
 import br.edu.ifsudestemg.demo.service.FuncionarioService;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
@@ -20,6 +24,7 @@ import java.util.stream.Collectors;
 @CrossOrigin
 public class FuncionarioController {
     private final FuncionarioService service;
+    private final EntityReferenceResolver references;
 
     @GetMapping()
     public ResponseEntity<List<FuncionarioDTO>> get(){
@@ -37,6 +42,7 @@ public class FuncionarioController {
     @PostMapping
     public ResponseEntity<FuncionarioDTO> criar(@RequestBody FuncionarioDTO payload){
         Funcionario entity = converter(payload);
+        entity.setId(null);
         FuncionarioDTO dto = FuncionarioDTO.create(service.salvar(entity));
         return ResponseEntity.status(HttpStatus.CREATED).body(dto);
     }
@@ -65,7 +71,20 @@ public class FuncionarioController {
     }
     public Funcionario converter(FuncionarioDTO dto) {
         ModelMapper modelMapper = new ModelMapper();
-        return modelMapper.map(dto, Funcionario.class);
+        Funcionario funcionario = funcionarioPorCargo(dto.getCargo());
+        modelMapper.map(dto, funcionario);
+        funcionario.setPosto(references.buscarPosto(dto.getIdPosto()));
+        return funcionario;
+    }
+
+    private Funcionario funcionarioPorCargo(Cargo cargo) {
+        if (cargo == null) {
+            throw new RegraNegocioException("Cargo deve ser informado.");
+        }
+        return switch (cargo) {
+            case ADMINISTRADOR -> new Administrador();
+            case GERENTE -> new Gerente();
+            case COLABORADOR -> new Colaborador();
+        };
     }
 }
-

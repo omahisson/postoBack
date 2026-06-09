@@ -26,6 +26,10 @@ public class ProdutoDTO {
 
     public static ProdutoDTO create(Produto body){
         ModelMapper modelMapper = new ModelMapper();
-        return modelMapper.map(body, ProdutoDTO.class);
+        ProdutoDTO dto = modelMapper.map(body, ProdutoDTO.class);
+        if (body.getPosto() != null) {
+            dto.setIdPosto(body.getPosto().getId());
+        }
+        return dto;
     }
 }

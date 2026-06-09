@@ -20,6 +20,7 @@ import java.util.stream.Collectors;
 @CrossOrigin
 public class ProdutoController {
     private final ProdutoService service;
+    private final EntityReferenceResolver references;
 
     @GetMapping()
     public ResponseEntity get(){
@@ -39,8 +40,9 @@ public class ProdutoController {
     public ResponseEntity post(@RequestBody ProdutoDTO dto) {
         try {
             Produto produto = converter(dto);
+            produto.setId(null);
             produto = service.salvar(produto);
-            return new ResponseEntity(produto, HttpStatus.CREATED);
+            return new ResponseEntity(ProdutoDTO.create(produto), HttpStatus.CREATED);
         } catch (RegraNegocioException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
@@ -54,8 +56,8 @@ public class ProdutoController {
         try {
             Produto produto = converter(dto);
             produto.setId(id);
-            service.salvar(produto);
-            return ResponseEntity.ok(produto);
+            produto = service.salvar(produto);
+            return ResponseEntity.ok(ProdutoDTO.create(produto));
         } catch (RegraNegocioException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
@@ -78,6 +80,7 @@ public class ProdutoController {
     public Produto converter(ProdutoDTO dto) {
         ModelMapper modelMapper = new ModelMapper();
         Produto produto = modelMapper.map(dto, Produto.class);
+        produto.setPosto(references.buscarPosto(dto.getIdPosto()));
         return produto;
     }
 }

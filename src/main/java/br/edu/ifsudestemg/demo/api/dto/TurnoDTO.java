@@ -21,6 +21,10 @@ public class TurnoDTO {
 
     public static TurnoDTO create(Turno body){
         ModelMapper modelMapper = new ModelMapper();
-        return modelMapper.map(body, TurnoDTO.class);
+        TurnoDTO dto = modelMapper.map(body, TurnoDTO.class);
+        if (body.getPosto() != null) {
+            dto.setIdPosto(body.getPosto().getId());
+        }
+        return dto;
     }
 }

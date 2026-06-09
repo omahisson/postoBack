@@ -22,11 +22,15 @@ public class CompraDTO {
     private BigDecimal valorTotal;
     private String numeroNotaFiscal;
     private FormaPagamento formaPagamento;
-    private long idPosto;
+    private Long idPosto;
     private Status status;
 
     public static CompraDTO create(Compra body){
         ModelMapper modelMapper = new ModelMapper();
-        return modelMapper.map(body, CompraDTO.class);
+        CompraDTO dto = modelMapper.map(body, CompraDTO.class);
+        if (body.getPosto() != null) {
+            dto.setIdPosto(body.getPosto().getId());
+        }
+        return dto;
     }
 }

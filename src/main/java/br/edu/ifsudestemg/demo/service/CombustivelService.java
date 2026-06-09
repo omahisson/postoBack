@@ -17,9 +17,11 @@ import static br.edu.ifsudestemg.demo.service.utils.EnderecoValidator.validar;
 @Service
 public class CombustivelService {
     private CombustivelJpaRepository repository;
+    private DeleteDependencyCleaner deleteDependencyCleaner;
 
-    public CombustivelService(CombustivelJpaRepository repository){
+    public CombustivelService(CombustivelJpaRepository repository, DeleteDependencyCleaner deleteDependencyCleaner){
         this.repository = repository;
+        this.deleteDependencyCleaner = deleteDependencyCleaner;
     }
 
     public List<Combustivel> getCombustivel(){
@@ -39,6 +41,7 @@ public class CombustivelService {
     @Transactional
     public void excluir(Combustivel combustivel){
         Objects.requireNonNull(combustivel.getId());;
+        deleteDependencyCleaner.limparVinculosDoProduto(combustivel);
         repository.delete(combustivel);
     }
 

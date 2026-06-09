@@ -21,6 +21,7 @@ import br.edu.ifsudestemg.demo.model.entity.RegistroPrecoServico;
 @CrossOrigin
 public class RegistroPrecoServicoController {
     private final RegistroPrecoServicoService service;
+    private final EntityReferenceResolver references;
 
     @GetMapping
     public ResponseEntity get(){
@@ -40,19 +41,20 @@ public class RegistroPrecoServicoController {
     @PostMapping
     public ResponseEntity post(@RequestBody RegistroPrecoServicoDTO dto){
         RegistroPrecoServico registroPrecoServico = converter(dto);
+        registroPrecoServico.setId(null);
         registroPrecoServico = service.salvar(registroPrecoServico);
-        return new ResponseEntity(registroPrecoServico, HttpStatus.CREATED);
+        return new ResponseEntity(RegistroPrecoServicoDTO.create(registroPrecoServico), HttpStatus.CREATED);
     }
 
-    @PutMapping
+    @PutMapping("/{id}")
     public ResponseEntity put(@PathVariable("id") Long id ,@RequestBody RegistroPrecoServicoDTO dto){
         if(!service.getRegistroPrecoServicoById(id).isPresent()){
             return new ResponseEntity("Registro de preço de serviço não encontrado",HttpStatus.NOT_FOUND);
         }
         RegistroPrecoServico registroPrecoServico = converter(dto);
         registroPrecoServico.setId(id);
-        service.salvar(registroPrecoServico);
-        return ResponseEntity.ok(registroPrecoServico);
+        registroPrecoServico = service.salvar(registroPrecoServico);
+        return ResponseEntity.ok(RegistroPrecoServicoDTO.create(registroPrecoServico));
     }
 
     @DeleteMapping("{id}")
@@ -72,6 +74,7 @@ public class RegistroPrecoServicoController {
     public RegistroPrecoServico converter(RegistroPrecoServicoDTO dto){
         ModelMapper modelMapper = new ModelMapper();
         RegistroPrecoServico registroPrecoServico = modelMapper.map(dto, RegistroPrecoServico.class);
+        registroPrecoServico.setServico(references.buscarServico(dto.getIdServico()));
         return registroPrecoServico;
     }
 }

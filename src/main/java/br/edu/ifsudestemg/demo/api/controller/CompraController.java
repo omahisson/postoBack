@@ -20,6 +20,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class CompraController {
     private final CompraService service;
+    private final EntityReferenceResolver references;
 
     @GetMapping
     public ResponseEntity get(){
@@ -39,19 +40,20 @@ public class CompraController {
     @PostMapping
     public ResponseEntity post(@RequestBody CompraDTO dto){
         Compra compra = converter(dto);
+        compra.setId(null);
         compra = service.salvar(compra);
-        return new ResponseEntity(compra, HttpStatus.CREATED);
+        return new ResponseEntity(CompraDTO.create(compra), HttpStatus.CREATED);
     }
 
-    @PutMapping
+    @PutMapping("/{id}")
     public ResponseEntity put(@PathVariable("id") Long id,@RequestBody CompraDTO dto){
         if(!service.getCompraById(id).isPresent()){
             return new ResponseEntity("Compra não encontrada", HttpStatus.NOT_FOUND);
         }
         Compra compra = converter(dto);
         compra.setId(id);
-        service.salvar(compra);
-        return ResponseEntity.ok(compra);
+        compra = service.salvar(compra);
+        return ResponseEntity.ok(CompraDTO.create(compra));
     }
 
     @DeleteMapping("{id}")
@@ -71,6 +73,7 @@ public class CompraController {
     public Compra converter(CompraDTO dto){
         ModelMapper modelMapper = new ModelMapper();
         Compra compra = modelMapper.map(dto, Compra.class);
+        compra.setPosto(references.buscarPosto(dto.getIdPosto()));
         return compra;
     }
 

@@ -21,6 +21,7 @@ import java.util.stream.Collectors;
 public class BombaController {
 
     private final BombaService service;
+    private final EntityReferenceResolver references;
 
     @GetMapping()
     public ResponseEntity get(){
@@ -47,8 +48,9 @@ public class BombaController {
     public ResponseEntity post(@RequestBody BombaDTO dto) {
         try {
             Bomba bomba = converter(dto);
+            bomba.setId(null);
             bomba = service.salvar(bomba);
-            return new ResponseEntity(bomba, HttpStatus.CREATED);
+            return new ResponseEntity(BombaDTO.create(bomba), HttpStatus.CREATED);
         } catch (RegraNegocioException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
@@ -62,8 +64,8 @@ public class BombaController {
         try {
             Bomba bomba = converter(dto);
             bomba.setId(id);
-            service.salvar(bomba);
-            return ResponseEntity.ok(bomba);
+            bomba = service.salvar(bomba);
+            return ResponseEntity.ok(BombaDTO.create(bomba));
         } catch (RegraNegocioException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
@@ -86,6 +88,7 @@ public class BombaController {
     public Bomba converter(BombaDTO dto) {
         ModelMapper modelMapper = new ModelMapper();
         Bomba bomba = modelMapper.map(dto, Bomba.class);
+        bomba.setPosto(references.buscarPosto(dto.getIdPosto()));
         return bomba;
     }
 }

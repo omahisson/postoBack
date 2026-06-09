@@ -22,6 +22,10 @@ public class RegistroPrecoServicoDTO {
 
     public static RegistroPrecoServicoDTO create(RegistroPrecoServico body){
         ModelMapper modelMapper = new ModelMapper();
-        return modelMapper.map(body, RegistroPrecoServicoDTO.class);
+        RegistroPrecoServicoDTO dto = modelMapper.map(body, RegistroPrecoServicoDTO.class);
+        if (body.getServico() != null) {
+            dto.setIdServico(body.getServico().getId());
+        }
+        return dto;
     }
 }

@@ -23,7 +23,7 @@ public class PostoDTO {
     private String cep;
 
     private Long id;
-    private Long nome;
+    private String nome;
     private LocalDate dataCadastro;
     private Long idPosto;
     private Boolean ativo;
@@ -37,6 +37,10 @@ public class PostoDTO {
 
     public static PostoDTO create(Posto body){
         ModelMapper modelMapper = new ModelMapper();
-        return modelMapper.map(body, PostoDTO.class);
+        PostoDTO dto = modelMapper.map(body, PostoDTO.class);
+        if (body.getPosto() != null) {
+            dto.setIdPosto(body.getPosto().getId());
+        }
+        return dto;
     }
 }

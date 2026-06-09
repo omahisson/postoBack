@@ -22,7 +22,7 @@ public class ClienteDTO {
     private Long id;
     private String nome;
     private LocalDate dataCadastro;
-    private Long idPposto;
+    private Long idPosto;
     private Boolean ativo;
     private String telefone;
     private String email;
@@ -35,6 +35,10 @@ public class ClienteDTO {
 
     public static ClienteDTO create(Cliente body){
         ModelMapper modelMapper = new ModelMapper();
-        return modelMapper.map(body, ClienteDTO.class);
+        ClienteDTO dto = modelMapper.map(body, ClienteDTO.class);
+        if (body.getPosto() != null) {
+            dto.setIdPosto(body.getPosto().getId());
+        }
+        return dto;
     }
 }

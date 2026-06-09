@@ -26,6 +26,10 @@ public class VendaDTO {
 
     public static VendaDTO create(Venda body){
         ModelMapper modelMapper = new ModelMapper();
-        return modelMapper.map(body, VendaDTO.class);
+        VendaDTO dto = modelMapper.map(body, VendaDTO.class);
+        if (body.getPosto() != null) {
+            dto.setIdPosto(body.getPosto().getId());
+        }
+        return dto;
     }
 }

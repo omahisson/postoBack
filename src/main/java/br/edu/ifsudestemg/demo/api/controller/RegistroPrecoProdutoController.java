@@ -21,6 +21,7 @@ import br.edu.ifsudestemg.demo.service.RegistroPrecoProdutoService;
 public class RegistroPrecoProdutoController{
 
     private final RegistroPrecoProdutoService service;
+    private final EntityReferenceResolver references;
 
     @GetMapping()
     public ResponseEntity get(){
@@ -40,11 +41,12 @@ public class RegistroPrecoProdutoController{
     @PostMapping
     public ResponseEntity post(@RequestBody RegistroPrecoProdutoDTO dto){
         RegistroPrecoProduto registroPrecoProduto = converter(dto);
+        registroPrecoProduto.setId(null);
         registroPrecoProduto = service.salvar(registroPrecoProduto);
-        return new ResponseEntity(registroPrecoProduto, HttpStatus.CREATED);
+        return new ResponseEntity(RegistroPrecoProdutoDTO.create(registroPrecoProduto), HttpStatus.CREATED);
     }
 
-    @PutMapping
+    @PutMapping("/{id}")
     public ResponseEntity put(@PathVariable("id") Long id ,@RequestBody RegistroPrecoProdutoDTO dto){
         if(!service.getRegistroPrecoProdutoById(id).isPresent()){
             return new ResponseEntity("Registro de preço de produto não encontrado", HttpStatus.NOT_FOUND);
@@ -52,7 +54,7 @@ public class RegistroPrecoProdutoController{
         RegistroPrecoProduto registroPrecoProduto = converter(dto);
         registroPrecoProduto.setId(id);
         registroPrecoProduto = service.salvar(registroPrecoProduto);
-        return ResponseEntity.ok(registroPrecoProduto);
+        return ResponseEntity.ok(RegistroPrecoProdutoDTO.create(registroPrecoProduto));
     }
 
     @DeleteMapping("{id}")
@@ -72,6 +74,7 @@ public class RegistroPrecoProdutoController{
     public RegistroPrecoProduto converter(RegistroPrecoProdutoDTO dto) {
         ModelMapper modelMapper = new ModelMapper();
         RegistroPrecoProduto registroPrecoProduto = modelMapper.map(dto, RegistroPrecoProduto.class);
+        registroPrecoProduto.setProduto(references.buscarProduto(dto.getIdProduto()));
         return registroPrecoProduto;
     }
 }

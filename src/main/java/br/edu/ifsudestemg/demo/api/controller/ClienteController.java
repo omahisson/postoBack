@@ -20,6 +20,7 @@ import java.util.stream.Collectors;
 @CrossOrigin
 public class ClienteController {
     private final ClienteService service;
+    private final EntityReferenceResolver references;
 
     @GetMapping()
     public ResponseEntity<List<ClienteDTO>> get(){
@@ -37,6 +38,7 @@ public class ClienteController {
     @PostMapping
     public ResponseEntity<ClienteDTO> criar(@RequestBody ClienteDTO payload){
         Cliente entity = converter(payload);
+        entity.setId(null);
         ClienteDTO dto = ClienteDTO.create(service.salvar(entity));
         return ResponseEntity.status(HttpStatus.CREATED).body(dto);
     }
@@ -65,6 +67,8 @@ public class ClienteController {
     }
     public Cliente converter(ClienteDTO dto) {
         ModelMapper modelMapper = new ModelMapper();
-        return modelMapper.map(dto, Cliente.class);
+        Cliente cliente = modelMapper.map(dto, Cliente.class);
+        cliente.setPosto(references.buscarPosto(dto.getIdPosto()));
+        return cliente;
     }
 }

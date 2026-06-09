@@ -1,5 +1,6 @@
 package br.edu.ifsudestemg.demo.api.dto;
 
+import br.edu.ifsudestemg.demo.infrastructuries.enums.Cargo;
 import br.edu.ifsudestemg.demo.model.entity.Funcionario;
 import lombok.*;
 import org.modelmapper.ModelMapper;
@@ -17,6 +18,7 @@ public class FuncionarioDTO {
     private String senha;
     private String setor;
     private BigDecimal bonusMeta;
+    private Cargo cargo;
     private String cpf;
     private LocalDate dataNascimento;
     private String rg;
@@ -36,6 +38,11 @@ public class FuncionarioDTO {
 
     public static FuncionarioDTO create(Funcionario body){
         ModelMapper modelMapper = new ModelMapper();
-        return modelMapper.map(body, FuncionarioDTO.class);
+        FuncionarioDTO dto = modelMapper.map(body, FuncionarioDTO.class);
+        dto.setCargo(body.getCargo());
+        if (body.getPosto() != null) {
+            dto.setIdPosto(body.getPosto().getId());
+        }
+        return dto;
     }
 }

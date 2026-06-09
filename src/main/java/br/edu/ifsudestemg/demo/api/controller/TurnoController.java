@@ -20,6 +20,7 @@ import java.util.stream.Collectors;
 @CrossOrigin
 public class TurnoController {
     private final TurnoService service;
+    private final EntityReferenceResolver references;
 
     @GetMapping()
     public ResponseEntity<List<TurnoDTO>> get(){
@@ -37,6 +38,7 @@ public class TurnoController {
     @PostMapping
     public ResponseEntity<TurnoDTO> criar(@RequestBody TurnoDTO payload){
         Turno entity = converter(payload);
+        entity.setId(null);
         TurnoDTO dto = TurnoDTO.create(service.salvar(entity));
         return ResponseEntity.status(HttpStatus.CREATED).body(dto);
     }
@@ -65,6 +67,8 @@ public class TurnoController {
     }
     public Turno converter(TurnoDTO dto) {
         ModelMapper modelMapper = new ModelMapper();
-        return modelMapper.map(dto, Turno.class);
+        Turno turno = modelMapper.map(dto, Turno.class);
+        turno.setPosto(references.buscarPosto(dto.getIdPosto()));
+        return turno;
     }
 }

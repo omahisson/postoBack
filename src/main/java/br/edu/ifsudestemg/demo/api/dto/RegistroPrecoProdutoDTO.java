@@ -22,6 +22,10 @@ public class RegistroPrecoProdutoDTO {
 
     public static RegistroPrecoProdutoDTO create(RegistroPrecoProduto body){
         ModelMapper modelMapper = new ModelMapper();
-        return modelMapper.map(body, RegistroPrecoProdutoDTO.class);
+        RegistroPrecoProdutoDTO dto = modelMapper.map(body, RegistroPrecoProdutoDTO.class);
+        if (body.getProduto() != null) {
+            dto.setIdProduto(body.getProduto().getId());
+        }
+        return dto;
     }
 }

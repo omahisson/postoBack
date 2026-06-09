@@ -1,7 +1,6 @@
 package br.edu.ifsudestemg.demo.api.dto;
 
 import br.edu.ifsudestemg.demo.model.entity.Bomba;
-import br.edu.ifsudestemg.demo.model.entity.Posto;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -20,6 +19,10 @@ public class BombaDTO {
 
     public static BombaDTO create(Bomba body){
         ModelMapper modelMapper = new ModelMapper();
-        return modelMapper.map(body, BombaDTO.class);
+        BombaDTO dto = modelMapper.map(body, BombaDTO.class);
+        if (body.getPosto() != null) {
+            dto.setIdPosto(body.getPosto().getId());
+        }
+        return dto;
     }
 }

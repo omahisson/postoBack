@@ -16,6 +16,7 @@ import java.util.Optional;
 public class ServicoService {
 
     private final ServicoJpaRepository repository;
+    private final DeleteDependencyCleaner deleteDependencyCleaner;
 
     public List<Servico> getServicos(){
         return repository.findAll();
@@ -34,6 +35,7 @@ public class ServicoService {
     @Transactional
     public void excluir(Servico servico) {
         Objects.requireNonNull(servico.getId());
+        deleteDependencyCleaner.limparVinculosDoServico(servico);
         repository.delete(servico);
     }
 
