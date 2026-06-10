@@ -22,6 +22,10 @@ public class ServicoService {
         return repository.findAll();
     }
 
+    public List<Servico> getServicosByPosto(Long idPosto){
+        return repository.findByPostoId(idPosto);
+    }
+
     public Optional<Servico> getServico(Long id){
         return repository.findById(id);
     }

@@ -23,8 +23,8 @@ public class ServicoController {
     private final EntityReferenceResolver references;
 
     @GetMapping()
-    public ResponseEntity<List<ServicoDTO>> get(){
-        List<Servico> servicos = service.getServicos();
+    public ResponseEntity<List<ServicoDTO>> listar(@RequestParam(value = "idPosto", required = false) Long idPosto){
+        List<Servico> servicos = idPosto == null ? service.getServicos() : service.getServicosByPosto(idPosto);
         return ResponseEntity.ok(servicos.stream().map(ServicoDTO::create).collect(Collectors.toList()));
     }
     @GetMapping("/{id}")

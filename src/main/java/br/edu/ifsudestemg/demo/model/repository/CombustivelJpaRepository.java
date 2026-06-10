@@ -7,4 +7,5 @@ import java.util.List;
 
 public interface CombustivelJpaRepository extends JpaRepository<Combustivel, Long> {
     List<Combustivel> findByPostoId(Long idPosto);
+    List<Combustivel> findByPostoIdAndNomeIgnoreCase(Long idPosto, String nome);
 }
