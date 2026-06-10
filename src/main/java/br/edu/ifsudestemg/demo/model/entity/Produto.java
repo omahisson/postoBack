@@ -7,6 +7,8 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDate;
+
 @EqualsAndHashCode(callSuper = true)
 @Data
 @NoArgsConstructor
@@ -18,4 +20,6 @@ public class Produto extends Vendivel{
     private String codigoBarras;
     private String marca;
     private String categoria;
+    private Integer estoque;
+    private LocalDate dataValidade;
 }

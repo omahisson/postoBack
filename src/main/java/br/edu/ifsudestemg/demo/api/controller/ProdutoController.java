@@ -23,12 +23,12 @@ public class ProdutoController {
     private final EntityReferenceResolver references;
 
     @GetMapping()
-    public ResponseEntity get(){
-        List<Produto> produtos = service.getProduto();
+    public ResponseEntity listar(@RequestParam(value = "idPosto", required = false) Long idPosto){
+        List<Produto> produtos = idPosto == null ? service.getProduto() : service.getProdutoByPosto(idPosto);
         return ResponseEntity.ok(produtos.stream().map(ProdutoDTO::create).collect(Collectors.toList()));
     }
     @GetMapping("/{id}")
-    public ResponseEntity get(@PathVariable("id") Long id){
+    public ResponseEntity buscarPorId(@PathVariable("id") Long id){
         Optional<Produto> produto = service.getProdutoById(id);
         if(!produto.isPresent()){
             return new ResponseEntity("Produto não encontrado", HttpStatus.NOT_FOUND);

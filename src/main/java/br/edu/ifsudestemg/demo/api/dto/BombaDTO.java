@@ -6,6 +6,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.modelmapper.ModelMapper;
 
+import java.util.List;
+
 @AllArgsConstructor
 @Data
 @NoArgsConstructor
@@ -16,6 +18,7 @@ public class BombaDTO {
     private String numeroSerie;
     private Long idPosto;
     private Boolean ativo;
+    private List<String> combustiveis;
 
     public static BombaDTO create(Bomba body){
         ModelMapper modelMapper = new ModelMapper();

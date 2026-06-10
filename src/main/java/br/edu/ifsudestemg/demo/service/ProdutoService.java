@@ -10,8 +10,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
-import static br.edu.ifsudestemg.demo.service.utils.EnderecoValidator.validar;
-
 @Service
 public class ProdutoService {
     private ProdutoJpaRepository repository;
@@ -26,19 +24,23 @@ public class ProdutoService {
         return repository.findAll();
     }
 
+    public List<Produto> getProdutoByPosto(Long idPosto){
+        return repository.findByPostoId(idPosto);
+    }
+
     public Optional<Produto> getProdutoById(Long id){
         return repository.findById(id);
     }
 
     @Transactional
     public Produto salvar(Produto produto){
-        validar(produto);
+        this.validar(produto);
         return repository.save(produto);
     }
 
     @Transactional
     public void excluir(Produto produto){
-        Objects.requireNonNull(produto.getId());;
+        Objects.requireNonNull(produto.getId());
         deleteDependencyCleaner.limparVinculosDoProduto(produto);
         repository.delete(produto);
     }
@@ -57,12 +59,9 @@ public class ProdutoService {
 
     public void validar(Produto produto){
         validarString(produto.getCodigoBarras(), "Codigo barras invalido");
-        validarString(produto.getMarca(), "Marca invalido");
-        validarString(produto.getCategoria(), "Categoria invalido");
         validarString(produto.getNome(), "Nome invalido");
-        validarNString(produto.getPreco(), "Preço invalido"); //validar dps negativo
-        validarString(produto.getDescricao(), "Descricao invalido");
-        validarString(produto.getUnidade(), "Unidade invalido");
+        validarNString(produto.getPreco(), "Preco invalido");
+        validarNString(produto.getEstoque(), "Estoque invalido");
         validarNString(produto.getPosto(), "Posto invalido");
         validarNString(produto.getAtivo(), "Ativo invalido");
     }

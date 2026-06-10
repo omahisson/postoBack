@@ -24,8 +24,8 @@ public class BombaController {
     private final EntityReferenceResolver references;
 
     @GetMapping()
-    public ResponseEntity get(){
-        List<Bomba> bombas = service.getBomba();
+    public ResponseEntity listar(@RequestParam(value = "idPosto", required = false) Long idPosto){
+        List<Bomba> bombas = idPosto == null ? service.getBomba() : service.getBombaByPosto(idPosto);
         return ResponseEntity.ok(
                 bombas.stream()
                         .map(BombaDTO::create)
@@ -34,7 +34,7 @@ public class BombaController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity get(@PathVariable("id") Long id){
+    public ResponseEntity buscarPorId(@PathVariable("id") Long id){
         Optional<Bomba> bomba = service.getBombaById(id);
 
         if(!bomba.isPresent()){

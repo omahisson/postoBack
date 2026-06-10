@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -31,13 +32,13 @@ public class CombustivelController {
     private final EntityReferenceResolver references;
 
     @GetMapping
-    public ResponseEntity<List<CombustivelDTO>> get() {
-        List<Combustivel> combustiveis = service.getCombustivel();
+    public ResponseEntity<List<CombustivelDTO>> listar(@RequestParam(value = "idPosto", required = false) Long idPosto) {
+        List<Combustivel> combustiveis = idPosto == null ? service.getCombustivel() : service.getCombustivelByPosto(idPosto);
         return ResponseEntity.ok(combustiveis.stream().map(CombustivelDTO::create).collect(Collectors.toList()));
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<?> get(@PathVariable("id") Long id) {
+    public ResponseEntity<?> buscarPorId(@PathVariable("id") Long id) {
         Optional<Combustivel> combustivel = service.getCombustivelById(id);
         if (combustivel.isEmpty()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Combustivel nao encontrado");

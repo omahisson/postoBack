@@ -5,6 +5,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @Entity
 @Data
 @NoArgsConstructor
@@ -23,4 +25,6 @@ public class Bomba {
     private Posto posto;
 
     private Boolean ativo;
+    @ElementCollection
+    private List<String> combustiveis;
 }

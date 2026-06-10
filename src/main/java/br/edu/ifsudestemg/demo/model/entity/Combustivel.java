@@ -18,4 +18,6 @@ public class Combustivel extends Produto{
     private String tipoCombustivel;
     private String octanagem;
     private String composicao;
+    private String fornecedor;
+    private String ultimoAbastecimento;
 }
