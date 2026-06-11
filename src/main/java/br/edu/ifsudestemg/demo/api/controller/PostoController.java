@@ -20,7 +20,6 @@ import java.util.stream.Collectors;
 @CrossOrigin
 public class PostoController {
     private final PostoService service;
-    private final EntityReferenceResolver references;
 
     @GetMapping()
     public ResponseEntity get(){
@@ -79,8 +78,6 @@ public class PostoController {
 
     public Posto converter(PostoDTO dto) {
         ModelMapper modelMapper = new ModelMapper();
-        Posto posto = modelMapper.map(dto, Posto.class);
-        posto.setPosto(references.buscarPosto(dto.getIdPosto()));
-        return posto;
+        return modelMapper.map(dto, Posto.class);
     }
 }

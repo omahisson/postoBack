@@ -57,10 +57,8 @@ public class PostoService {
         validarString(posto.getCnpj(), "Cnpj invalido");
         validarString(posto.getRazaoSocial(), "Razao social invalida");
         validarString(posto.getNomeFantasia(), "Nome fantasia invalido");
-        validarString(posto.getInscricaoEstadual(), "Inscricao estadual invalido");
         validarString(posto.getNome(), "Nome invalido");
         validarNString(posto.getDataCadastro(), "Data cadastro invalido");
-        validarNString(posto.getPosto(), "Posto invalido");
         validarNString(posto.getAtivo(), "Valor não valido");
         validarString(posto.getTelefone(), "Telefone invalido");
         validarString(posto.getEmail(), "Email invalido");

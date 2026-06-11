@@ -21,11 +21,11 @@ public class ProdutoService {
     }
 
     public List<Produto> getProduto(){
-        return repository.findAll();
+        return repository.findProdutos();
     }
 
     public List<Produto> getProdutoByPosto(Long idPosto){
-        return repository.findByPostoId(idPosto);
+        return repository.findProdutosByPostoId(idPosto);
     }
 
     public Optional<Produto> getProdutoById(Long id){
