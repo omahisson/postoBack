@@ -25,7 +25,7 @@ public class CombustivelDTO {
     private String codigoBarras;
     private String marca;
     private String categoria;
-    private Integer estoque;
+    private BigDecimal estoque;
     private LocalDate dataValidade;
 
     private String tipoCombustivel;

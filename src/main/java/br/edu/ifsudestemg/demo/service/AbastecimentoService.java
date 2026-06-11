@@ -57,8 +57,8 @@ public class AbastecimentoService {
 
     private void aplicarEstoque(Abastecimento abastecimento) {
         Combustivel combustivel = abastecimento.getCombustivel();
-        int estoqueAtual = combustivel.getEstoque() == null ? 0 : combustivel.getEstoque();
-        combustivel.setEstoque(estoqueAtual + abastecimento.getQuantidade().intValue());
+        BigDecimal estoqueAtual = combustivel.getEstoque() == null ? BigDecimal.ZERO : combustivel.getEstoque();
+        combustivel.setEstoque(estoqueAtual.add(abastecimento.getQuantidade()));
         combustivel.setFornecedor(abastecimento.getFornecedor());
         combustivel.setDataValidade(abastecimento.getDataValidade());
         combustivel.setUltimoAbastecimento(abastecimento.getDataEntrega() == null ? null : abastecimento.getDataEntrega().toString());
@@ -70,8 +70,9 @@ public class AbastecimentoService {
         if (combustivel == null || abastecimento.getQuantidade() == null) {
             return;
         }
-        int estoqueAtual = combustivel.getEstoque() == null ? 0 : combustivel.getEstoque();
-        combustivel.setEstoque(Math.max(0, estoqueAtual - abastecimento.getQuantidade().intValue()));
+        BigDecimal estoqueAtual = combustivel.getEstoque() == null ? BigDecimal.ZERO : combustivel.getEstoque();
+        BigDecimal estoqueAtualizado = estoqueAtual.subtract(abastecimento.getQuantidade());
+        combustivel.setEstoque(estoqueAtualizado.compareTo(BigDecimal.ZERO) < 0 ? BigDecimal.ZERO : estoqueAtualizado);
         combustivelRepository.save(combustivel);
     }
 

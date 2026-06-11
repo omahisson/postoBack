@@ -19,7 +19,7 @@ public class HistoricoCombustivelDTO {
     private String tipoCombustivel;
     private String nome;
     private String fornecedor;
-    private Integer estoque;
+    private BigDecimal estoque;
     private BigDecimal precoAnterior;
     private BigDecimal novoPreco;
     private LocalDate dataVigencia;

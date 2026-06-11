@@ -2,11 +2,13 @@ package br.edu.ifsudestemg.demo.service;
 
 import br.edu.ifsudestemg.demo.model.entity.Combustivel;
 import br.edu.ifsudestemg.demo.model.entity.HistoricoCombustivel;
+import br.edu.ifsudestemg.demo.model.entity.PdvVenda;
 import br.edu.ifsudestemg.demo.model.entity.Posto;
 import br.edu.ifsudestemg.demo.model.entity.Produto;
 import br.edu.ifsudestemg.demo.model.entity.Venda;
 import br.edu.ifsudestemg.demo.model.repository.CombustivelJpaRepository;
 import br.edu.ifsudestemg.demo.model.repository.HistoricoCombustivelJpaRepository;
+import br.edu.ifsudestemg.demo.model.repository.PdvVendaJpaRepository;
 import br.edu.ifsudestemg.demo.model.repository.PostoJpaRepository;
 import br.edu.ifsudestemg.demo.model.repository.ProdutoJpaRepository;
 import br.edu.ifsudestemg.demo.model.repository.VendaJpaRepository;
@@ -33,30 +35,40 @@ public class DashboardService {
     private final ProdutoJpaRepository produtoRepository;
     private final CombustivelJpaRepository combustivelRepository;
     private final HistoricoCombustivelJpaRepository historicoCombustivelRepository;
+    private final PdvVendaJpaRepository pdvVendaRepository;
 
     public Map<String, Object> getDashboard(Long idPosto) {
         List<Venda> vendas = idPosto == null ? vendaRepository.findAll() : vendaRepository.findByPostoId(idPosto);
+        List<PdvVenda> vendasPdv = idPosto == null ? pdvVendaRepository.findAll() : pdvVendaRepository.findByPostoId(idPosto);
         List<Posto> postos = postoRepository.findAll();
         List<Produto> produtos = idPosto == null ? produtoRepository.findAll() : produtoRepository.findByPostoId(idPosto);
         List<Combustivel> combustiveis = idPosto == null ? combustivelRepository.findAll() : combustivelRepository.findByPostoId(idPosto);
         List<HistoricoCombustivel> historicos = idPosto == null ? historicoCombustivelRepository.findAll() : historicoCombustivelRepository.findByPostoId(idPosto);
 
         Map<String, Object> dashboard = new LinkedHashMap<>();
-        dashboard.put("dadosFinanceiros", dadosFinanceiros(vendas));
+        dashboard.put("dadosFinanceiros", dadosFinanceiros(vendas, vendasPdv));
         dashboard.put("rankingRede", rankingRede(postos));
         dashboard.put("maisVendidos", maisVendidos(produtos, combustiveis));
         dashboard.put("relatorioPreco", relatorioPreco(historicos));
         dashboard.put("relatorioEstoque", relatorioEstoque(produtos, combustiveis));
-        dashboard.put("relatorioOperacional", relatorioOperacional(vendas, produtos, combustiveis));
+        dashboard.put("relatorioOperacional", relatorioOperacional(vendas, vendasPdv, produtos, combustiveis));
         return dashboard;
     }
 
-    private Map<String, Object> dadosFinanceiros(List<Venda> vendas) {
+    private Map<String, Object> dadosFinanceiros(List<Venda> vendas, List<PdvVenda> vendasPdv) {
         BigDecimal faturamento = vendas.stream()
                 .map(Venda::getValorLiquido)
                 .filter(Objects::nonNull)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
-        BigDecimal ticketMedio = vendas.isEmpty() ? BigDecimal.ZERO : faturamento.divide(BigDecimal.valueOf(vendas.size()), 2, RoundingMode.HALF_UP);
+        BigDecimal faturamentoPdv = vendasPdv.stream()
+                .filter(venda -> !Boolean.TRUE.equals(venda.getCancelada()))
+                .map(PdvVenda::getTotal)
+                .filter(Objects::nonNull)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+        long totalPdv = vendasPdv.stream().filter(venda -> !Boolean.TRUE.equals(venda.getCancelada())).count();
+        BigDecimal faturamentoTotal = faturamento.add(faturamentoPdv);
+        long totalVendas = vendas.size() + totalPdv;
+        BigDecimal ticketMedio = totalVendas == 0 ? BigDecimal.ZERO : faturamentoTotal.divide(BigDecimal.valueOf(totalVendas), 2, RoundingMode.HALF_UP);
         String pagamentoPrincipal = vendas.stream()
                 .filter(venda -> venda.getFormaPagamento() != null)
                 .collect(java.util.stream.Collectors.groupingBy(Venda::getFormaPagamento, java.util.stream.Collectors.counting()))
@@ -67,9 +79,9 @@ public class DashboardService {
                 .orElse("N/A");
 
         Map<String, Object> dados = new LinkedHashMap<>();
-        dados.put("faturamentoTotal", moeda(faturamento));
+        dados.put("faturamentoTotal", moeda(faturamentoTotal));
         dados.put("ticketMedio", moeda(ticketMedio));
-        dados.put("totalVendas", vendas.size());
+        dados.put("totalVendas", totalVendas);
         dados.put("mainPayment", pagamentoPrincipal);
         return dados;
     }
@@ -100,7 +112,7 @@ public class DashboardService {
                 .map(item -> {
                     Map<String, Object> row = new LinkedHashMap<>();
                     row.put("name", item.getNome());
-                    row.put("quantity", item.getEstoque() == null ? 0 : item.getEstoque());
+                    row.put("quantity", item.getEstoque() == null ? BigDecimal.ZERO : item.getEstoque());
                     row.put("revenue", moeda(item.getPreco() == null ? BigDecimal.ZERO : item.getPreco()));
                     return row;
                 })
@@ -127,7 +139,7 @@ public class DashboardService {
     private List<Map<String, Object>> relatorioEstoque(List<Produto> produtos, List<Combustivel> combustiveis) {
         return java.util.stream.Stream.concat(produtos.stream(), combustiveis.stream())
                 .map(item -> {
-                    int estoque = item.getEstoque() == null ? 0 : item.getEstoque();
+                    BigDecimal estoque = item.getEstoque() == null ? BigDecimal.ZERO : item.getEstoque();
                     Map<String, Object> row = new LinkedHashMap<>();
                     row.put("item", item.getNome());
                     row.put("quantity", estoque);
@@ -139,22 +151,22 @@ public class DashboardService {
                 .toList();
     }
 
-    private Map<String, Object> relatorioOperacional(List<Venda> vendas, List<Produto> produtos, List<Combustivel> combustiveis) {
+    private Map<String, Object> relatorioOperacional(List<Venda> vendas, List<PdvVenda> vendasPdv, List<Produto> produtos, List<Combustivel> combustiveis) {
         Map<String, Object> dados = new LinkedHashMap<>();
-        dados.put("vendas", vendas.size());
+        dados.put("vendas", vendas.size() + vendasPdv.stream().filter(venda -> !Boolean.TRUE.equals(venda.getCancelada())).count());
         dados.put("produtos", produtos.size());
         dados.put("combustiveis", combustiveis.size());
         return dados;
     }
 
-    private String statusEstoque(int estoque, LocalDate validade) {
+    private String statusEstoque(BigDecimal estoque, LocalDate validade) {
         if (validade != null && validade.isBefore(LocalDate.now().plusDays(30))) {
             return "Vencimento";
         }
-        if (estoque <= 0) {
+        if (estoque.compareTo(BigDecimal.ZERO) <= 0) {
             return "Critico";
         }
-        if (estoque < 10) {
+        if (estoque.compareTo(BigDecimal.TEN) < 0) {
             return "Baixo";
         }
         return "OK";
