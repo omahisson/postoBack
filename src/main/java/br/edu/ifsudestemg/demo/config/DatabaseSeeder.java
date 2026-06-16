@@ -148,14 +148,14 @@ public class DatabaseSeeder implements CommandLineRunner {
             oleo = produtos.get(0);
             aditivo = produtos.get(1);
         } else {
-            oleo = produtoRepository.save(produto("Oleo Motor 5W30", "7891000000011", "Lubrax", "Lubrificante", postoCentro, "UN", "89.90"));
-            aditivo = produtoRepository.save(produto("Aditivo Radiador", "7891000000028", "RadCool", "Aditivo", postoNorte, "UN", "24.90"));
+            oleo = produtoRepository.save(produto("Oleo Motor 5W30", "7891000000011", "Lubrax", "Lubrificante", postoCentro, "UN", "89.90", "25"));
+            aditivo = produtoRepository.save(produto("Aditivo Radiador", "7891000000028", "RadCool", "Aditivo", postoNorte, "UN", "24.90", "30"));
         }
 
         if (combustivelRepository.count() == 0) {
             combustivelRepository.saveAll(List.of(
-                    combustivel("Gasolina Comum", "7892000000018", "PetroSul", "Gasolina", postoCentro, "L", "5.79", "Gasolina", "87", "Gasolina C"),
-                    combustivel("Etanol Hidratado", "7892000000025", "BioMinas", "Etanol", postoNorte, "L", "3.89", "Etanol", "0", "Etanol hidratado")
+                    combustivel("Gasolina Comum", "7892000000018", "PetroSul", "Gasolina", postoCentro, "L", "5.79", "150", "Gasolina", "87", "Gasolina C"),
+                    combustivel("Etanol Hidratado", "7892000000025", "BioMinas", "Etanol", postoNorte, "L", "3.89", "120", "Etanol", "0", "Etanol hidratado")
             ));
         }
 
@@ -266,22 +266,26 @@ public class DatabaseSeeder implements CommandLineRunner {
         return colaborador;
     }
 
-    private Produto produto(String nome, String codigoBarras, String marca, String categoria, Posto posto, String unidade, String preco) {
+    private Produto produto(String nome, String codigoBarras, String marca, String categoria, Posto posto, String unidade, String preco, String estoque) {
         Produto produto = new Produto();
         vendivel(produto, nome, posto, unidade, preco, "Produto seed para testes");
         produto.setCodigoBarras(codigoBarras);
         produto.setMarca(marca);
         produto.setCategoria(categoria);
+        produto.setEstoque(new BigDecimal(estoque));
+        produto.setDataValidade(LocalDate.now().plusMonths(6));
         return produto;
     }
 
     private Combustivel combustivel(String nome, String codigoBarras, String marca, String categoria, Posto posto,
-                                   String unidade, String preco, String tipo, String octanagem, String composicao) {
+                                   String unidade, String preco, String estoque, String tipo, String octanagem, String composicao) {
         Combustivel combustivel = new Combustivel();
         vendivel(combustivel, nome, posto, unidade, preco, "Combustivel seed para testes");
         combustivel.setCodigoBarras(codigoBarras);
         combustivel.setMarca(marca);
         combustivel.setCategoria(categoria);
+        combustivel.setEstoque(new BigDecimal(estoque));
+        combustivel.setDataValidade(LocalDate.now().plusMonths(6));
         combustivel.setTipoCombustivel(tipo);
         combustivel.setOctanagem(octanagem);
         combustivel.setComposicao(composicao);

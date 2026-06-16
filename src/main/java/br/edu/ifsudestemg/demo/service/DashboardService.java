@@ -41,7 +41,7 @@ public class DashboardService {
         List<Venda> vendas = idPosto == null ? vendaRepository.findAll() : vendaRepository.findByPostoId(idPosto);
         List<PdvVenda> vendasPdv = idPosto == null ? pdvVendaRepository.findAll() : pdvVendaRepository.findByPostoId(idPosto);
         List<Posto> postos = postoRepository.findAll();
-        List<Produto> produtos = idPosto == null ? produtoRepository.findAll() : produtoRepository.findByPostoId(idPosto);
+        List<Produto> produtos = idPosto == null ? produtoRepository.findProdutos() : produtoRepository.findProdutosByPostoId(idPosto);
         List<Combustivel> combustiveis = idPosto == null ? combustivelRepository.findAll() : combustivelRepository.findByPostoId(idPosto);
         List<HistoricoCombustivel> historicos = idPosto == null ? historicoCombustivelRepository.findAll() : historicoCombustivelRepository.findByPostoId(idPosto);
 
