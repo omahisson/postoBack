@@ -40,31 +40,30 @@ public class PromocaoService {
 
     public void validar(Promocao promocao) {
         if(promocao.getTitulo() == null || promocao.getTitulo().trim().isEmpty()){
-            throw new RegraNegocioException("Título inválido");
+            throw new RegraNegocioException("Titulo invalido");
         }
         if(promocao.getDescricao() == null || promocao.getDescricao().trim().isEmpty()){
-            throw new RegraNegocioException("Descrição inválida");
+            throw new RegraNegocioException("Descricao invalida");
         }
         if(promocao.getTipoDesconto() == null){
-            throw new RegraNegocioException("Tipo de desconto inválido");
+            throw new RegraNegocioException("Tipo de desconto invalido");
         }
-        if(promocao.getValorDesconto() == null || promocao.getValorDesconto().doubleValue() < 0){
-            throw new RegraNegocioException("Valor do desconto inválido");
+        if(promocao.getValorDesconto() == null || promocao.getValorDesconto().signum() < 0){
+            throw new RegraNegocioException("Valor do desconto invalido");
         }
         if(promocao.getDataInicio() == null){
-            throw new RegraNegocioException("Data de início inválida");
+            throw new RegraNegocioException("Data de inicio invalida");
         }
         if(promocao.getDataFim() == null){
-            throw new RegraNegocioException("Data de fim inválida");
+            throw new RegraNegocioException("Data de fim invalida");
         }
-        if(promocao.getProdutos() == null){
-            throw new RegraNegocioException("Produto inválido");
-        }
-        if(promocao.getServicos() == null){
-            throw new RegraNegocioException("Serviço inválido");
+        boolean semProdutos = promocao.getProdutos() == null || promocao.getProdutos().isEmpty();
+        boolean semServicos = promocao.getServicos() == null || promocao.getServicos().isEmpty();
+        if(semProdutos && semServicos){
+            throw new RegraNegocioException("Informe ao menos um produto ou servico para a promocao");
         }
         if(promocao.getAtivo() == null){
-            throw new RegraNegocioException("Status inválido");
+            throw new RegraNegocioException("Status invalido");
         }
     }
 }

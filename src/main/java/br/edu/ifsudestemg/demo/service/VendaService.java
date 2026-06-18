@@ -42,21 +42,23 @@ public class VendaService {
     }
 
     public void validar(Venda venda) {
-        if (venda.getValorBruto() == null || venda.getValorBruto().compareTo(new BigDecimal(0))<= 0){
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Valor Bruto deve ser um valor válido maior que zero.");
+        if (venda.getValorBruto() == null || venda.getValorBruto().compareTo(BigDecimal.ZERO) <= 0){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Valor bruto deve ser maior que zero.");
         }
-        if (venda.getValorDesconto() == null || venda.getValorBruto().compareTo(new BigDecimal(0))< 0){
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Valor Bruto deve ser um valor válido maior ou igual a zero.");
+        if (venda.getValorDesconto() == null || venda.getValorDesconto().compareTo(BigDecimal.ZERO) < 0){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Valor de desconto deve ser maior ou igual a zero.");
+        }
+        if (venda.getValorDesconto().compareTo(venda.getValorBruto()) > 0){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Valor de desconto nao pode ser maior que o valor bruto.");
         }
         if(venda.getFormaPagamento() == null){
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Forma de pagamento inválida.");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Forma de pagamento invalida.");
         }
         if (venda.getPosto() == null){
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Posto inválido.");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Posto invalido.");
         }
         if (venda.getStatus() == null){
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Status inválido.");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Status invalido.");
         }
     }
-
 }

@@ -2,10 +2,10 @@ package br.edu.ifsudestemg.demo.config;
 
 import br.edu.ifsudestemg.demo.security.JwtAuthFilter;
 import br.edu.ifsudestemg.demo.service.UsuarioService;
-import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
+import org.springframework.core.annotation.Order;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -19,15 +19,10 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 @Configuration
 @EnableWebSecurity
-@RequiredArgsConstructor
 public class SecurityConfig {
 
-    private static final String ADMINISTRADOR = "ADMINISTRADOR";
-    private static final String GERENTE = "GERENTE";
-    private static final String COLABORADOR = "COLABORADOR";
-
-    private final UsuarioService usuarioService;
-    private final JwtAuthFilter jwtAuthFilter;
+    private static final String ADMIN = "ADMIN";
+    private static final String USER = "USER";
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -40,32 +35,47 @@ public class SecurityConfig {
     }
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    @Order(1)
+    public SecurityFilterChain publicSecurityFilterChain(HttpSecurity http) throws Exception {
+        http
+                .securityMatcher(
+                        "/v3/api-docs/**",
+                        "/swagger-ui/**",
+                        "/swagger-ui.html",
+                        "/swagger-resources/**",
+                        "/webjars/**",
+                        "/error",
+                        "/api/v1/usuarios",
+                        "/api/v1/usuarios/auth")
+                .csrf(AbstractHttpConfigurer::disable)
+                .cors(AbstractHttpConfigurer::disable)
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .authorizeHttpRequests(auth -> auth.anyRequest().permitAll());
+
+        return http.build();
+    }
+
+    @Bean
+    @Order(2)
+    public SecurityFilterChain securityFilterChain(
+            HttpSecurity http,
+            UsuarioService usuarioService,
+            JwtAuthFilter jwtAuthFilter) throws Exception {
         http
                 .csrf(AbstractHttpConfigurer::disable)
                 .cors(AbstractHttpConfigurer::disable)
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .userDetailsService(usuarioService)
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers(
-                                "/v3/api-docs/**",
-                                "/swagger-ui/**",
-                                "/swagger-ui.html",
-                                "/swagger-resources/**",
-                                "/webjars/**")
-                        .permitAll()
-                        .requestMatchers("/api/v1/auth/**", "/api/v1/login/**")
-                        .permitAll()
-
                         .requestMatchers("/api/v1/pdv/**")
-                        .hasAnyRole(ADMINISTRADOR, GERENTE, COLABORADOR)
+                        .hasAnyRole(ADMIN, USER)
 
                         .requestMatchers(HttpMethod.GET,
                                 "/api/v1/produto/**",
                                 "/api/v1/combustivel/**",
                                 "/api/v1/servico/**",
                                 "/api/v1/promocao/**")
-                        .hasAnyRole(ADMINISTRADOR, GERENTE)
+                        .hasAnyRole(ADMIN, USER)
 
                         .requestMatchers(
                                 "/api/v1/dashboard/**",
@@ -83,10 +93,10 @@ public class SecurityConfig {
                                 "/api/v1/servico/**",
                                 "/api/v1/turno/**",
                                 "/api/v1/venda/**")
-                        .hasAnyRole(ADMINISTRADOR, GERENTE)
+                        .hasAnyRole(ADMIN, USER)
 
-                        .requestMatchers("/api/v1/funcionario/**", "/api/v1/posto/**")
-                        .hasRole(ADMINISTRADOR)
+                        .requestMatchers("/api/v1/usuarios/**", "/api/v1/funcionario/**", "/api/v1/posto/**")
+                        .hasRole(ADMIN)
 
                         .anyRequest()
                         .authenticated())

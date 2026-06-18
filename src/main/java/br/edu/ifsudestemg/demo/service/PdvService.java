@@ -25,11 +25,15 @@ public class PdvService {
     private final FuncionarioJpaRepository funcionarioRepository;
     private final ProdutoJpaRepository produtoRepository;
     private final CombustivelJpaRepository combustivelRepository;
+    private final ServicoJpaRepository servicoRepository;
 
     @Transactional
     public PdvTurno abrirTurno(PdvTurnoDTO dto) {
         Posto posto = buscarPosto(dto.getIdPosto());
         Funcionario operador = buscarFuncionario(dto.getOperadorId());
+        if (turnoRepository.existsByPostoIdAndOperadorIdAndStatusIgnoreCase(posto.getId(), operador.getId(), "aberto")) {
+            throw new RegraNegocioException("Ja existe turno aberto para este operador neste posto");
+        }
         PdvTurno turno = new PdvTurno();
         turno.setPosto(posto);
         turno.setOperador(operador);
@@ -75,7 +79,7 @@ public class PdvService {
         venda.setTurno(turno);
         venda.setData(dto.getData() == null ? LocalDateTime.now() : dto.getData());
         venda.setFormaPagamento(obrigatorio(dto.getFormaPagamento(), "Forma de pagamento invalida"));
-        venda.setItens(dto.getItens().stream().map(PdvVendaItemDTO::toEntity).toList());
+        venda.setItens(dto.getItens().stream().map(item -> montarItemVenda(item, turno.getPosto())).toList());
         venda.setTotal(venda.getItens().stream().map(PdvVendaItem::getValorTotal).filter(Objects::nonNull).reduce(BigDecimal.ZERO, BigDecimal::add));
         venda.setCancelada(false);
         venda.getItens().forEach(item -> aplicarEstoque(item, false));
@@ -98,6 +102,9 @@ public class PdvService {
     @Transactional
     public PdvTurno fecharTurno(Long id, PdvFechamentoDTO dto) {
         PdvTurno turno = buscarTurno(id);
+        if (!"aberto".equalsIgnoreCase(turno.getStatus())) {
+            throw new RegraNegocioException("Turno ja fechado");
+        }
         List<PdvVenda> vendas = listarVendasDoTurno(id).stream().filter(venda -> !Boolean.TRUE.equals(venda.getCancelada())).toList();
         BigDecimal totalVendas = vendas.stream().map(PdvVenda::getTotal).filter(Objects::nonNull).reduce(BigDecimal.ZERO, BigDecimal::add);
         BigDecimal totalCartao = totalPorPagamento(vendas, "cartao");
@@ -122,6 +129,39 @@ public class PdvService {
                 .map(PdvVenda::getTotal)
                 .filter(Objects::nonNull)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
+    }
+
+    private PdvVendaItem montarItemVenda(PdvVendaItemDTO dto, Posto posto) {
+        String tipo = obrigatorio(dto.getTipo(), "Tipo do item invalido").toLowerCase();
+        if (dto.getItemId() == null) {
+            throw new RegraNegocioException("Item invalido");
+        }
+        BigDecimal quantidade = numero(dto.getQuantidade());
+        if (quantidade.compareTo(BigDecimal.ZERO) <= 0) {
+            throw new RegraNegocioException("Quantidade invalida");
+        }
+
+        if ("servico".equals(tipo)) {
+            Servico servico = servicoRepository.findById(dto.getItemId())
+                    .orElseThrow(() -> new RegraNegocioException("Servico nao encontrado"));
+            validarMesmoPosto(servico.getPosto(), posto);
+            return new PdvVendaItem("servico", servico.getId(), servico.getNome(), quantidade,
+                    numero(servico.getPreco()), numero(servico.getPreco()).multiply(quantidade), servico.getUnidade());
+        }
+
+        Produto produto;
+        if ("combustivel".equals(tipo)) {
+            produto = combustivelRepository.findById(dto.getItemId())
+                    .orElseThrow(() -> new RegraNegocioException("Combustivel nao encontrado"));
+        } else if ("produto".equals(tipo)) {
+            produto = produtoRepository.findById(dto.getItemId())
+                    .orElseThrow(() -> new RegraNegocioException("Produto nao encontrado"));
+        } else {
+            throw new RegraNegocioException("Tipo do item invalido");
+        }
+        validarMesmoPosto(produto.getPosto(), posto);
+        return new PdvVendaItem(tipo, produto.getId(), produto.getNome(), quantidade,
+                numero(produto.getPreco()), numero(produto.getPreco()).multiply(quantidade), produto.getUnidade());
     }
 
     private void aplicarEstoque(PdvVendaItem item, boolean devolver) {
@@ -166,5 +206,11 @@ public class PdvService {
 
     private BigDecimal numero(BigDecimal valor) {
         return valor == null ? BigDecimal.ZERO : valor;
+    }
+
+    private void validarMesmoPosto(Posto postoItem, Posto postoTurno) {
+        if (postoItem == null || postoTurno == null || !Objects.equals(postoItem.getId(), postoTurno.getId())) {
+            throw new RegraNegocioException("Item nao pertence ao posto do turno");
+        }
     }
 }

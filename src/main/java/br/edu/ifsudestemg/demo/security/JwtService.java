@@ -1,6 +1,6 @@
 package br.edu.ifsudestemg.demo.security;
 
-import br.edu.ifsudestemg.demo.model.entity.Funcionario;
+import br.edu.ifsudestemg.demo.model.entity.Usuario;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
@@ -21,21 +21,21 @@ public class JwtService {
     @Value("${security.jwt.chave-assinatura}")
     private String chaveAssinatura;
 
-    public String gerarToken(Funcionario funcionario){
-        long expString = Long.valueOf(expiracao);
+    public String gerarToken(Usuario usuario){
+        long expString = Long.parseLong(expiracao);
         LocalDateTime dataHoraExpiracao = LocalDateTime.now().plusDays(expString);
         Instant instant = dataHoraExpiracao.atZone(ZoneId.systemDefault()).toInstant();
         Date data = Date.from(instant);
 
         return Jwts
                 .builder()
-                .setSubject(funcionario.getMaticula())
+                .setSubject(usuario.getLogin())
                 .setExpiration(data)
-                .signWith( SignatureAlgorithm.HS512, chaveAssinatura )
+                .signWith(SignatureAlgorithm.HS512, chaveAssinatura)
                 .compact();
     }
 
-    private Claims obterClaims( String token ) throws ExpiredJwtException {
+    private Claims obterClaims(String token) throws ExpiredJwtException {
         return Jwts
                 .parser()
                 .setSigningKey(chaveAssinatura)
@@ -57,6 +57,6 @@ public class JwtService {
     }
 
     public String obterLoginUsuario(String token) throws ExpiredJwtException{
-        return (String) obterClaims(token).getSubject();
+        return obterClaims(token).getSubject();
     }
 }

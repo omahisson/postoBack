@@ -7,4 +7,6 @@ import java.util.List;
 
 public interface PdvTurnoJpaRepository extends JpaRepository<PdvTurno, Long> {
     List<PdvTurno> findByPostoIdAndStatusIgnoreCase(Long idPosto, String status);
+
+    boolean existsByPostoIdAndOperadorIdAndStatusIgnoreCase(Long idPosto, Long operadorId, String status);
 }

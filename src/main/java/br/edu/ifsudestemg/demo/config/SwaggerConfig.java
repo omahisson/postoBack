@@ -7,6 +7,8 @@ import io.swagger.v3.oas.models.info.Info;
 import io.swagger.v3.oas.models.media.Content;
 import io.swagger.v3.oas.models.media.MediaType;
 import io.swagger.v3.oas.models.responses.ApiResponse;
+import io.swagger.v3.oas.models.security.SecurityRequirement;
+import io.swagger.v3.oas.models.security.SecurityScheme;
 import io.swagger.v3.oas.models.servers.Server;
 import io.swagger.v3.oas.models.tags.Tag;
 import org.springdoc.core.customizers.OperationCustomizer;
@@ -23,6 +25,8 @@ import java.util.Optional;
 @Configuration
 public class SwaggerConfig {
 
+    private static final String SECURITY_SCHEME_NAME = "bearerAuth";
+
     private static final Map<String, ResourceDocumentation> RESOURCES = Map.ofEntries(
             Map.entry("BombaController", new ResourceDocumentation("bombas", "bomba", "Gerencia as bombas cadastradas nos postos.")),
             Map.entry("ClienteController", new ResourceDocumentation("clientes", "cliente", "Gerencia os clientes e seus dados de fidelidade.")),
@@ -37,6 +41,7 @@ public class SwaggerConfig {
             Map.entry("RegistroPrecoServicoController", new ResourceDocumentation("registros-preco-servico", "registro de preço de serviço", "Gerencia histórico de preços de serviços.")),
             Map.entry("ServicoController", new ResourceDocumentation("servicos", "serviço", "Gerencia serviços prestados nos postos.")),
             Map.entry("TurnoController", new ResourceDocumentation("turnos", "turno", "Gerencia turnos de trabalho.")),
+            Map.entry("UsarioController", new ResourceDocumentation("usuarios", "usuario", "Gerencia usuarios e autenticacao JWT.")),
             Map.entry("VendaController", new ResourceDocumentation("vendas", "venda", "Gerencia vendas realizadas nos postos."))
     );
 
@@ -62,6 +67,10 @@ public class SwaggerConfig {
                                 .description(resource.description()))
                         .toList())
                 .components(new Components()
+                        .addSecuritySchemes(SECURITY_SCHEME_NAME, new SecurityScheme()
+                                .type(SecurityScheme.Type.HTTP)
+                                .scheme("bearer")
+                                .bearerFormat("JWT"))
                         .addResponses("BadRequest", new ApiResponse()
                                 .description("Requisição inválida ou regra de negócio não atendida")
                                 .content(errorContent()))
@@ -89,8 +98,19 @@ public class SwaggerConfig {
             operation.setTags(List.of(resource.tag()));
 
             String methodName = handlerMethod.getMethod().getName();
+            boolean isUsuarioController = handlerMethod.getBeanType().getSimpleName().equals("UsarioController");
+            boolean isPublicUsuarioEndpoint = isUsuarioController && (methodName.equals("post") || methodName.equals("autenticar"));
 
-            if (methodName.equals("get") && isDetailGet(handlerMethod)) {
+            if (!isPublicUsuarioEndpoint) {
+                operation.addSecurityItem(new SecurityRequirement().addList(SECURITY_SCHEME_NAME));
+            }
+
+            if (methodName.equals("autenticar")) {
+                operation.setSummary("Autenticar usuario");
+                operation.setDescription("Recebe login e senha e retorna um token JWT. Use o token no botao Authorize do Swagger.");
+                describeResponse(operation.getResponses(), "200", "Token gerado com sucesso");
+                operation.getResponses().addApiResponse("401", new ApiResponse().description("Login ou senha invalidos"));
+            } else if (methodName.equals("get") && isDetailGet(handlerMethod)) {
                 operation.setSummary("Obter detalhes de " + resource.singular());
                 operation.setDescription("Busca um único registro de " + resource.singular() + " pelo identificador informado na rota.");
                 describeResponse(operation.getResponses(), "200", "Registro encontrado");

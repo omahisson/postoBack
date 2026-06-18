@@ -45,7 +45,7 @@ class EntityReferenceResolver {
 
     List<Produto> buscarProdutos(List<Long> idsProdutos) {
         if (idsProdutos == null || idsProdutos.isEmpty()) {
-            throw new RegraNegocioException("Ao menos um produto deve ser informado.");
+            return List.of();
         }
         List<Produto> produtos = produtoRepository.findAllById(idsProdutos);
         if (produtos.size() != idsProdutos.size()) {
@@ -56,7 +56,7 @@ class EntityReferenceResolver {
 
     List<Servico> buscarServicos(List<Long> idsServicos) {
         if (idsServicos == null || idsServicos.isEmpty()) {
-            throw new RegraNegocioException("Ao menos um servico deve ser informado.");
+            return List.of();
         }
         List<Servico> servicos = servicoRepository.findAllById(idsServicos);
         if (servicos.size() != idsServicos.size()) {

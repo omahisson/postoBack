@@ -59,13 +59,13 @@ public class FuncionarioService {
         if(funcionario.getDataAdmissao() == null){
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Data de admissão não deve ser vazio.");
         }
-        if(funcionario.getSenha().trim().isEmpty()){
+        if(funcionario.getSenha() == null || funcionario.getSenha().trim().isEmpty()){
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Senha não deve ser vazio.");
         }
         if(funcionario.getSenha().length() < 8){
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Senha deve possuir ao menos 8 caracteres.");
         }
-        if(funcionario.getSetor().trim().isEmpty()){
+        if(funcionario.getSetor() == null || funcionario.getSetor().trim().isEmpty()){
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Setor não deve ser vazio.");
         }
         if (funcionario.getSalario() == null || funcionario.getSalario().compareTo(new BigDecimal(0))<= 0){

@@ -6,6 +6,7 @@ import br.edu.ifsudestemg.demo.model.repository.PostoJpaRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -30,6 +31,12 @@ public class PostoService {
 
     @Transactional
     public Posto salvar(Posto posto){
+        if (posto.getDataCadastro() == null) {
+            posto.setDataCadastro(LocalDate.now());
+        }
+        if (posto.getAtivo() == null) {
+            posto.setAtivo(true);
+        }
         validar(posto);
         return repository.save(posto);
     }
