@@ -31,3 +31,11 @@ build/
 
 ### VS Code ###
 .vscode/
+
+### Build and temporary artifacts ###
+.tmpfat/
+.tmpfat.zip
+*.class
+target/
+build/
+out/

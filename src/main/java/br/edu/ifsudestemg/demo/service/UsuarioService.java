@@ -1,10 +1,8 @@
 package br.edu.ifsudestemg.demo.service;
 
-import br.edu.ifsudestemg.demo.exception.RegraNegocioException;
 import br.edu.ifsudestemg.demo.exception.SenhaInvalidaException;
-import br.edu.ifsudestemg.demo.model.entity.Usuario;
-import br.edu.ifsudestemg.demo.model.repository.UsuarioRepository;
-import jakarta.transaction.Transactional;
+import br.edu.ifsudestemg.demo.model.entity.Funcionario;
+import br.edu.ifsudestemg.demo.model.repository.FuncionarioJpaRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -13,34 +11,16 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
-
 @Service
 @RequiredArgsConstructor
 public class UsuarioService implements UserDetailsService {
 
     private final PasswordEncoder encoder;
-    private final UsuarioRepository repository;
+    private final FuncionarioJpaRepository repository;
 
-    public List<Usuario> getUsuarios() {
-        return repository.findAll();
-    }
-
-    public Optional<Usuario> getUsuarioById(Long id) {
-        return repository.findById(id);
-    }
-
-    @Transactional
-    public Usuario salvar(Usuario usuario){
-        validar(usuario);
-        return repository.save(usuario);
-    }
-
-    public UserDetails autenticar(Usuario usuario){
-        UserDetails user = loadUserByUsername(usuario.getLogin());
-        boolean senhasBatem = encoder.matches(usuario.getSenha(), user.getPassword());
+    public UserDetails autenticar(String matricula, String senha) {
+        UserDetails user = loadUserByUsername(matricula);
+        boolean senhasBatem = encoder.matches(senha, user.getPassword());
 
         if (senhasBatem){
             return user;
@@ -50,36 +30,14 @@ public class UsuarioService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        Usuario usuario = repository.findByLogin(username)
-                .orElseThrow(() -> new UsernameNotFoundException("Usuario nao encontrado"));
-
-        String[] roles = usuario.isAdmin()
-                ? new String[]{"ADMIN", "USER"}
-                : new String[]{"USER"};
+        Funcionario funcionario = repository.findByMaticula(username)
+                .orElseThrow(() -> new UsernameNotFoundException("Funcionario nao encontrado"));
 
         return User
                 .builder()
-                .username(usuario.getLogin())
-                .password(usuario.getSenha())
-                .roles(roles)
+                .username(funcionario.getMaticula())
+                .password(funcionario.getSenha())
+                .roles(funcionario.getCargo().name())
                 .build();
-    }
-
-    @Transactional
-    public void excluir(Usuario usuario) {
-        Objects.requireNonNull(usuario.getId());
-        repository.delete(usuario);
-    }
-
-    public void validar(Usuario usuario) {
-        if (usuario.getLogin() == null || usuario.getLogin().trim().isEmpty()) {
-            throw new RegraNegocioException("Login invalido");
-        }
-        if (usuario.getCpf() == null || usuario.getCpf().trim().isEmpty()) {
-            throw new RegraNegocioException("CPF invalido");
-        }
-        if (usuario.getId() == null && repository.existsByLogin(usuario.getLogin())) {
-            throw new RegraNegocioException("Login ja cadastrado");
-        }
     }
 }

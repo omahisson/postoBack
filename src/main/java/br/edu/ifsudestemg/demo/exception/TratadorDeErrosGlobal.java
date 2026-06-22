@@ -1,7 +1,9 @@
 package br.edu.ifsudestemg.demo.exception;
 
 import br.edu.ifsudestemg.demo.api.dto.ErroPadronizadoDTO;
+import com.fasterxml.jackson.databind.JsonMappingException;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.orm.ObjectOptimisticLockingFailureException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -29,6 +31,16 @@ public class TratadorDeErrosGlobal {
         ErroPadronizadoDTO erro = new ErroPadronizadoDTO(
                 "BAD_REQUEST",
                 mensagemDeVinculo(ex),
+                LocalDateTime.now()
+        );
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(erro);
+    }
+
+    @ExceptionHandler(InvalidDataAccessApiUsageException.class)
+    public ResponseEntity<ErroPadronizadoDTO> tratarUsoInvalidoDaApi(InvalidDataAccessApiUsageException ex) {
+        ErroPadronizadoDTO erro = new ErroPadronizadoDTO(
+                "BAD_REQUEST",
+                "Identificador obrigatorio nao informado ou invalido.",
                 LocalDateTime.now()
         );
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(erro);
@@ -101,6 +113,17 @@ public class TratadorDeErrosGlobal {
         String detalhe = ex.getMostSpecificCause() != null
                 ? ex.getMostSpecificCause().getMessage()
                 : ex.getMessage();
+
+        Throwable causa = ex;
+        while (causa != null) {
+            if (causa instanceof JsonMappingException mapping && !mapping.getPath().isEmpty()) {
+                String campo = mapping.getPath().get(mapping.getPath().size() - 1).getFieldName();
+                if (campo != null) {
+                    return "Valor invalido para o campo '" + campo + "'.";
+                }
+            }
+            causa = causa.getCause();
+        }
 
         if (detalhe != null && detalhe.contains("from Array value")) {
             return "Formato do JSON invalido: envie um unico objeto entre chaves { }, nao uma lista entre colchetes [ ].";

@@ -48,14 +48,10 @@ public class CombustivelController {
 
     @PostMapping
     public ResponseEntity<?> post(@RequestBody CombustivelDTO dto) {
-        try {
-            Combustivel combustivel = converter(dto);
-            combustivel.setId(null);
-            combustivel = service.salvar(combustivel);
-            return ResponseEntity.status(HttpStatus.CREATED).body(CombustivelDTO.create(combustivel));
-        } catch (RegraNegocioException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
+        Combustivel combustivel = converter(dto);
+        combustivel.setId(null);
+        combustivel = service.salvar(combustivel);
+        return ResponseEntity.status(HttpStatus.CREATED).body(CombustivelDTO.create(combustivel));
     }
 
     @PutMapping("/{id}")
@@ -63,14 +59,10 @@ public class CombustivelController {
         if (service.getCombustivelById(id).isEmpty()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Combustivel nao encontrado");
         }
-        try {
-            Combustivel combustivel = converter(dto);
-            combustivel.setId(id);
-            combustivel = service.salvar(combustivel);
-            return ResponseEntity.ok(CombustivelDTO.create(combustivel));
-        } catch (RegraNegocioException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
+        Combustivel combustivel = converter(dto);
+        combustivel.setId(id);
+        combustivel = service.salvar(combustivel);
+        return ResponseEntity.ok(CombustivelDTO.create(combustivel));
     }
 
     @DeleteMapping("{id}")

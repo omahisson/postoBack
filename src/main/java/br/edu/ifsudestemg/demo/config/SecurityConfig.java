@@ -12,7 +12,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.crypto.password.NoOpPasswordEncoder;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
@@ -21,12 +21,13 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @EnableWebSecurity
 public class SecurityConfig {
 
-    private static final String ADMIN = "ADMIN";
-    private static final String USER = "USER";
+    private static final String ADMINISTRADOR = "ADMINISTRADOR";
+    private static final String GERENTE = "GERENTE";
+    private static final String COLABORADOR = "COLABORADOR";
 
     @Bean
     public PasswordEncoder passwordEncoder() {
-        return NoOpPasswordEncoder.getInstance();
+        return new BCryptPasswordEncoder();
     }
 
     @Bean
@@ -45,8 +46,7 @@ public class SecurityConfig {
                         "/swagger-resources/**",
                         "/webjars/**",
                         "/error",
-                        "/api/v1/usuarios",
-                        "/api/v1/usuarios/auth")
+                        "/api/v1/auth/**")
                 .csrf(AbstractHttpConfigurer::disable)
                 .cors(AbstractHttpConfigurer::disable)
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
@@ -68,14 +68,17 @@ public class SecurityConfig {
                 .userDetailsService(usuarioService)
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/v1/pdv/**")
-                        .hasAnyRole(ADMIN, USER)
+                        .hasAnyRole(ADMINISTRADOR, GERENTE, COLABORADOR)
 
                         .requestMatchers(HttpMethod.GET,
                                 "/api/v1/produto/**",
                                 "/api/v1/combustivel/**",
                                 "/api/v1/servico/**",
                                 "/api/v1/promocao/**")
-                        .hasAnyRole(ADMIN, USER)
+                        .hasAnyRole(ADMINISTRADOR, GERENTE, COLABORADOR)
+
+                        .requestMatchers(HttpMethod.POST, "/api/v1/funcionario")
+                        .permitAll()
 
                         .requestMatchers(
                                 "/api/v1/dashboard/**",
@@ -93,13 +96,13 @@ public class SecurityConfig {
                                 "/api/v1/servico/**",
                                 "/api/v1/turno/**",
                                 "/api/v1/venda/**")
-                        .hasAnyRole(ADMIN, USER)
+                        .hasAnyRole(ADMINISTRADOR, GERENTE)
 
-                        .requestMatchers("/api/v1/usuarios/**", "/api/v1/funcionario/**", "/api/v1/posto/**")
-                        .hasRole(ADMIN)
+                        .requestMatchers("/api/v1/funcionario/**", "/api/v1/posto/**")
+                        .hasRole(ADMINISTRADOR)
 
                         .anyRequest()
-                        .authenticated())
+                        .hasRole(ADMINISTRADOR))
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();

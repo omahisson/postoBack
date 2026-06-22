@@ -34,6 +34,8 @@ public class SwaggerConfig {
             Map.entry("CompraController", new ResourceDocumentation("compras", "compra", "Gerencia compras e notas fiscais de entrada.")),
             Map.entry("FornecedorController", new ResourceDocumentation("fornecedores", "fornecedor", "Gerencia fornecedores vinculados aos postos.")),
             Map.entry("FuncionarioController", new ResourceDocumentation("funcionarios", "funcionário", "Gerencia funcionários cadastrados no sistema.")),
+            Map.entry("AuthController", new ResourceDocumentation("autenticacao", "autenticacao", "Autentica funcionarios e emite tokens JWT.")),
+            Map.entry("PdvController", new ResourceDocumentation("pdv", "PDV", "Gerencia turnos e vendas no ponto de venda.")),
             Map.entry("PostoController", new ResourceDocumentation("postos", "posto", "Gerencia postos de combustíveis.")),
             Map.entry("ProdutoController", new ResourceDocumentation("produtos", "produto", "Gerencia produtos vendidos nos postos.")),
             Map.entry("PromocaoController", new ResourceDocumentation("promocoes", "promoção", "Gerencia promoções e descontos.")),
@@ -41,7 +43,6 @@ public class SwaggerConfig {
             Map.entry("RegistroPrecoServicoController", new ResourceDocumentation("registros-preco-servico", "registro de preço de serviço", "Gerencia histórico de preços de serviços.")),
             Map.entry("ServicoController", new ResourceDocumentation("servicos", "serviço", "Gerencia serviços prestados nos postos.")),
             Map.entry("TurnoController", new ResourceDocumentation("turnos", "turno", "Gerencia turnos de trabalho.")),
-            Map.entry("UsarioController", new ResourceDocumentation("usuarios", "usuario", "Gerencia usuarios e autenticacao JWT.")),
             Map.entry("VendaController", new ResourceDocumentation("vendas", "venda", "Gerencia vendas realizadas nos postos."))
     );
 
@@ -98,16 +99,16 @@ public class SwaggerConfig {
             operation.setTags(List.of(resource.tag()));
 
             String methodName = handlerMethod.getMethod().getName();
-            boolean isUsuarioController = handlerMethod.getBeanType().getSimpleName().equals("UsarioController");
-            boolean isPublicUsuarioEndpoint = isUsuarioController && (methodName.equals("post") || methodName.equals("autenticar"));
+            boolean isAuthController = handlerMethod.getBeanType().getSimpleName().equals("AuthController");
+            boolean isPublicAuthEndpoint = isAuthController && methodName.equals("autenticar");
 
-            if (!isPublicUsuarioEndpoint) {
+            if (!isPublicAuthEndpoint) {
                 operation.addSecurityItem(new SecurityRequirement().addList(SECURITY_SCHEME_NAME));
             }
 
             if (methodName.equals("autenticar")) {
-                operation.setSummary("Autenticar usuario");
-                operation.setDescription("Recebe login e senha e retorna um token JWT. Use o token no botao Authorize do Swagger.");
+                operation.setSummary("Autenticar funcionario");
+                operation.setDescription("Recebe matricula e senha e retorna um token JWT. Use o token no botao Authorize do Swagger.");
                 describeResponse(operation.getResponses(), "200", "Token gerado com sucesso");
                 operation.getResponses().addApiResponse("401", new ApiResponse().description("Login ou senha invalidos"));
             } else if (methodName.equals("get") && isDetailGet(handlerMethod)) {
@@ -177,7 +178,7 @@ public class SwaggerConfig {
         return new Content().addMediaType("application/json", new MediaType()
                 .example(Map.of(
                         "status", "400 BAD_REQUEST",
-                        "mensagem", "Mensagem de erro da regra de negócio",
+                        "mensagem", "O campo informado possui um valor invalido.",
                         "timestamp", "2026-06-08T19:30:00"
                 )));
     }

@@ -29,6 +29,9 @@ public class PdvService {
 
     @Transactional
     public PdvTurno abrirTurno(PdvTurnoDTO dto) {
+        if (dto == null) {
+            throw new RegraNegocioException("Dados do turno devem ser informados");
+        }
         Posto posto = buscarPosto(dto.getIdPosto());
         Funcionario operador = buscarFuncionario(dto.getOperadorId());
         if (turnoRepository.existsByPostoIdAndOperadorIdAndStatusIgnoreCase(posto.getId(), operador.getId(), "aberto")) {
@@ -50,23 +53,38 @@ public class PdvService {
     }
 
     public PdvTurno buscarTurno(Long id) {
+        if (id == null) {
+            throw new RegraNegocioException("Turno deve ser informado");
+        }
         return turnoRepository.findById(id).orElseThrow(() -> new RegraNegocioException("Turno nao encontrado"));
     }
 
     public List<PdvTurno> buscarTurnosAbertos(Long idPosto) {
+        if (idPosto == null) {
+            throw new RegraNegocioException("Posto deve ser informado");
+        }
         return turnoRepository.findByPostoIdAndStatusIgnoreCase(idPosto, "aberto");
     }
 
     public List<PdvVenda> listarVendasDoTurno(Long idTurno) {
+        if (idTurno == null) {
+            throw new RegraNegocioException("Turno deve ser informado");
+        }
         return vendaRepository.findByTurnoIdOrderByDataDesc(idTurno);
     }
 
     public PdvVenda buscarVenda(Long id) {
+        if (id == null) {
+            throw new RegraNegocioException("Venda deve ser informada");
+        }
         return vendaRepository.findById(id).orElseThrow(() -> new RegraNegocioException("Venda nao encontrada"));
     }
 
     @Transactional
     public PdvVenda registrarVenda(PdvVendaDTO dto) {
+        if (dto == null) {
+            throw new RegraNegocioException("Dados da venda devem ser informados");
+        }
         PdvTurno turno = buscarTurno(dto.getIdTurno());
         if (!"aberto".equalsIgnoreCase(turno.getStatus())) {
             throw new RegraNegocioException("Turno fechado");
@@ -102,6 +120,9 @@ public class PdvService {
     @Transactional
     public PdvTurno fecharTurno(Long id, PdvFechamentoDTO dto) {
         PdvTurno turno = buscarTurno(id);
+        if (dto == null) {
+            throw new RegraNegocioException("Dados do fechamento devem ser informados");
+        }
         if (!"aberto".equalsIgnoreCase(turno.getStatus())) {
             throw new RegraNegocioException("Turno ja fechado");
         }

@@ -38,14 +38,10 @@ public class ProdutoController {
 
     @PostMapping()
     public ResponseEntity post(@RequestBody ProdutoDTO dto) {
-        try {
-            Produto produto = converter(dto);
-            produto.setId(null);
-            produto = service.salvar(produto);
-            return new ResponseEntity(ProdutoDTO.create(produto), HttpStatus.CREATED);
-        } catch (RegraNegocioException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
+        Produto produto = converter(dto);
+        produto.setId(null);
+        produto = service.salvar(produto);
+        return new ResponseEntity(ProdutoDTO.create(produto), HttpStatus.CREATED);
     }
 
     @PutMapping("{id}")
@@ -53,14 +49,10 @@ public class ProdutoController {
         if (!service.getProdutoById(id).isPresent()) {
             return new ResponseEntity("Produto não encontrada", HttpStatus.NOT_FOUND);
         }
-        try {
-            Produto produto = converter(dto);
-            produto.setId(id);
-            produto = service.salvar(produto);
-            return ResponseEntity.ok(ProdutoDTO.create(produto));
-        } catch (RegraNegocioException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
+        Produto produto = converter(dto);
+        produto.setId(id);
+        produto = service.salvar(produto);
+        return ResponseEntity.ok(ProdutoDTO.create(produto));
     }
 
     @DeleteMapping("{id}")

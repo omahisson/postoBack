@@ -39,6 +39,7 @@ public class FuncionarioDTO {
     public static FuncionarioDTO create(Funcionario body){
         ModelMapper modelMapper = new ModelMapper();
         FuncionarioDTO dto = modelMapper.map(body, FuncionarioDTO.class);
+        dto.setSenha(null);
         dto.setCargo(body.getCargo());
         if (body.getPosto() != null) {
             dto.setIdPosto(body.getPosto().getId());

@@ -9,6 +9,7 @@ import br.edu.ifsudestemg.demo.service.utils.PessoaValidator;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -22,6 +23,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class FuncionarioService {
     private final FuncionarioJpaRepository repository;
+    private final PasswordEncoder passwordEncoder;
 
     public List<Funcionario> getFuncionarios(){
         return repository.findAll();
@@ -36,6 +38,9 @@ public class FuncionarioService {
         validar(funcionario);
         funcionario.setDataCadastro(LocalDate.now());
         funcionario.setAtivo(true);
+        if (!funcionario.getSenha().startsWith("$2")) {
+            funcionario.setSenha(passwordEncoder.encode(funcionario.getSenha()));
+        }
         return repository.save(funcionario);
     }
 
@@ -55,6 +60,9 @@ public class FuncionarioService {
 
         if(funcionario.getMaticula() == null || funcionario.getMaticula().trim().isEmpty()){
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Matrícula não deve ser vazio.");
+        }
+        if (funcionario.getId() == null && repository.existsByMaticula(funcionario.getMaticula())) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Matricula ja cadastrada.");
         }
         if(funcionario.getDataAdmissao() == null){
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Data de admissão não deve ser vazio.");
