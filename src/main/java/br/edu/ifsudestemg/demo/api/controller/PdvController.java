@@ -3,10 +3,14 @@ package br.edu.ifsudestemg.demo.api.controller;
 import br.edu.ifsudestemg.demo.api.dto.PdvFechamentoDTO;
 import br.edu.ifsudestemg.demo.api.dto.PdvTurnoDTO;
 import br.edu.ifsudestemg.demo.api.dto.PdvVendaDTO;
+import br.edu.ifsudestemg.demo.api.dto.FuncionarioDTO;
+import br.edu.ifsudestemg.demo.model.entity.Funcionario;
+import br.edu.ifsudestemg.demo.model.repository.FuncionarioJpaRepository;
 import br.edu.ifsudestemg.demo.service.PdvService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -17,6 +21,14 @@ import java.util.List;
 @CrossOrigin
 public class PdvController {
     private final PdvService service;
+    private final FuncionarioJpaRepository funcionarioRepository;
+
+    @GetMapping("/operador-atual")
+    public ResponseEntity<FuncionarioDTO> operadorAtual(Authentication authentication) {
+        Funcionario operador = funcionarioRepository.findByMaticula(authentication.getName())
+                .orElseThrow(() -> new IllegalArgumentException("Operador nao encontrado"));
+        return ResponseEntity.ok(FuncionarioDTO.create(operador));
+    }
 
     @PostMapping("/turnos")
     public ResponseEntity<PdvTurnoDTO> abrirTurno(@RequestBody PdvTurnoDTO payload) {

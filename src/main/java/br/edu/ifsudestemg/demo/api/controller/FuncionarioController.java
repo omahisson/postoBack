@@ -11,6 +11,7 @@ import br.edu.ifsudestemg.demo.service.FuncionarioService;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.Authentication;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -40,7 +41,12 @@ public class FuncionarioController {
         return ResponseEntity.ok(funcionario.map(FuncionarioDTO::create));
     }
     @PostMapping
-    public ResponseEntity<FuncionarioDTO> criar(@RequestBody FuncionarioDTO payload){
+    public ResponseEntity<FuncionarioDTO> criar(@RequestBody FuncionarioDTO payload, Authentication authentication){
+        boolean gerente = authentication.getAuthorities().stream()
+                .anyMatch(authority -> authority.getAuthority().equals("ROLE_GERENTE"));
+        if (gerente && payload.getCargo() != Cargo.COLABORADOR) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
         Funcionario entity = converter(payload);
         entity.setId(null);
         FuncionarioDTO dto = FuncionarioDTO.create(service.salvar(entity));

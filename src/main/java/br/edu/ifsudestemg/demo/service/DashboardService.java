@@ -69,13 +69,20 @@ public class DashboardService {
         BigDecimal faturamentoTotal = faturamento.add(faturamentoPdv);
         long totalVendas = vendas.size() + totalPdv;
         BigDecimal ticketMedio = totalVendas == 0 ? BigDecimal.ZERO : faturamentoTotal.divide(BigDecimal.valueOf(totalVendas), 2, RoundingMode.HALF_UP);
-        String pagamentoPrincipal = vendas.stream()
-                .filter(venda -> venda.getFormaPagamento() != null)
-                .collect(java.util.stream.Collectors.groupingBy(Venda::getFormaPagamento, java.util.stream.Collectors.counting()))
+        String pagamentoPrincipal = java.util.stream.Stream.concat(
+                        vendas.stream()
+                                .map(Venda::getFormaPagamento)
+                                .filter(Objects::nonNull)
+                                .map(Enum::name),
+                        vendasPdv.stream()
+                                .filter(venda -> !Boolean.TRUE.equals(venda.getCancelada()))
+                                .map(PdvVenda::getFormaPagamento)
+                                .filter(Objects::nonNull))
+                .collect(java.util.stream.Collectors.groupingBy(java.util.function.Function.identity(), java.util.stream.Collectors.counting()))
                 .entrySet()
                 .stream()
                 .max(Map.Entry.comparingByValue())
-                .map(entry -> entry.getKey().name())
+                .map(Map.Entry::getKey)
                 .orElse("N/A");
 
         Map<String, Object> dados = new LinkedHashMap<>();

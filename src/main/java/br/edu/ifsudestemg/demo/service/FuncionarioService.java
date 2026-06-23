@@ -52,7 +52,7 @@ public class FuncionarioService {
 
     private void validar(Funcionario funcionario){
 
-        PessoaValidator.validar(funcionario.getNome(), funcionario.getPosto());
+        validarPessoa(funcionario);
 
         PessoaFisicaValidator.validar(funcionario.getCpf(), funcionario.getDataNascimento(), funcionario.getRg());
 
@@ -84,5 +84,15 @@ public class FuncionarioService {
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Bonus de meta ser um valor válido maior que zero.");
             }
         }
+    }
+
+    private void validarPessoa(Funcionario funcionario) {
+        if (funcionario.getCargo() == Cargo.ADMINISTRADOR && funcionario.getPosto() == null) {
+            if (funcionario.getNome() == null || funcionario.getNome().trim().isEmpty()) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Nome nao deve ser vazio.");
+            }
+            return;
+        }
+        PessoaValidator.validar(funcionario.getNome(), funcionario.getPosto());
     }
 }

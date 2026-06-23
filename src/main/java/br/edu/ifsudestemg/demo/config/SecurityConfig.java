@@ -12,6 +12,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
@@ -48,7 +49,7 @@ public class SecurityConfig {
                         "/error",
                         "/api/v1/auth/**")
                 .csrf(AbstractHttpConfigurer::disable)
-                .cors(AbstractHttpConfigurer::disable)
+                .cors(Customizer.withDefaults())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth.anyRequest().permitAll());
 
@@ -63,7 +64,7 @@ public class SecurityConfig {
             JwtAuthFilter jwtAuthFilter) throws Exception {
         http
                 .csrf(AbstractHttpConfigurer::disable)
-                .cors(AbstractHttpConfigurer::disable)
+                .cors(Customizer.withDefaults())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .userDetailsService(usuarioService)
                 .authorizeHttpRequests(auth -> auth
@@ -78,7 +79,7 @@ public class SecurityConfig {
                         .hasAnyRole(ADMINISTRADOR, GERENTE, COLABORADOR)
 
                         .requestMatchers(HttpMethod.POST, "/api/v1/funcionario")
-                        .permitAll()
+                        .hasAnyRole(ADMINISTRADOR, GERENTE)
 
                         .requestMatchers(
                                 "/api/v1/dashboard/**",
@@ -99,7 +100,7 @@ public class SecurityConfig {
                         .hasAnyRole(ADMINISTRADOR, GERENTE)
 
                         .requestMatchers("/api/v1/funcionario/**", "/api/v1/posto/**")
-                        .hasRole(ADMINISTRADOR)
+                        .hasAnyRole(ADMINISTRADOR, GERENTE)
 
                         .anyRequest()
                         .hasRole(ADMINISTRADOR))
