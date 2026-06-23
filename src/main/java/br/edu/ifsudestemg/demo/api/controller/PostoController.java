@@ -3,15 +3,20 @@ package br.edu.ifsudestemg.demo.api.controller;
 import br.edu.ifsudestemg.demo.api.dto.PostoDTO;
 import br.edu.ifsudestemg.demo.exception.RegraNegocioException;
 import br.edu.ifsudestemg.demo.model.entity.Posto;
+import br.edu.ifsudestemg.demo.model.entity.Gerente;
+import br.edu.ifsudestemg.demo.model.entity.Funcionario;
+import br.edu.ifsudestemg.demo.model.repository.FuncionarioJpaRepository;
 import br.edu.ifsudestemg.demo.service.PostoService;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @RestController
@@ -20,10 +25,23 @@ import java.util.stream.Collectors;
 @CrossOrigin
 public class PostoController {
     private final PostoService service;
+    private final FuncionarioJpaRepository funcionarioRepository;
 
     @GetMapping()
-    public ResponseEntity get(){
+    public ResponseEntity get(Authentication authentication){
         List<Posto> postos = service.getPosto();
+        if (authentication != null && authentication.getAuthorities().stream()
+                .anyMatch(authority -> authority.getAuthority().equals("ROLE_GERENTE"))) {
+            Funcionario funcionario = funcionarioRepository.findByMaticula(authentication.getName()).orElse(null);
+            if (funcionario instanceof Gerente gerente) {
+                Set<Long> permitidos = gerente.getPostosVinculados();
+                if (permitidos.isEmpty() && gerente.getPosto() != null) {
+                    permitidos = Set.of(gerente.getPosto().getId());
+                }
+                Set<Long> postosPermitidos = permitidos;
+                postos = postos.stream().filter(posto -> postosPermitidos.contains(posto.getId())).toList();
+            }
+        }
         return ResponseEntity.ok(postos.stream().map(PostoDTO::create).collect(Collectors.toList()));
     }
     @GetMapping("/{id}")

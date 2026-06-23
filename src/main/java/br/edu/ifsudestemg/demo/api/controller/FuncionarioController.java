@@ -16,6 +16,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.LinkedHashSet;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -80,6 +81,11 @@ public class FuncionarioController {
         Funcionario funcionario = funcionarioPorCargo(dto.getCargo());
         modelMapper.map(dto, funcionario);
         funcionario.setPosto(references.buscarPosto(dto.getIdPosto()));
+        if (funcionario instanceof Gerente gerente) {
+            gerente.setPostosVinculados(new LinkedHashSet<>(dto.getPostosVinculados() == null
+                    ? List.of(dto.getIdPosto())
+                    : dto.getPostosVinculados()));
+        }
         return funcionario;
     }
 
