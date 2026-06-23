@@ -68,6 +68,9 @@ public class SecurityConfig {
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .userDetailsService(usuarioService)
                 .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/api/v1/auth/**")
+                        .permitAll()
+
                         .requestMatchers("/api/v1/pdv/**")
                         .hasAnyRole(ADMINISTRADOR, GERENTE, COLABORADOR)
 
